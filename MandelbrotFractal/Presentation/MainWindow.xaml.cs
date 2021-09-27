@@ -25,5 +25,14 @@ namespace Presentation
             DataContext = vm;
             InitializeComponent();
         }
+
+        private void WindowPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            var viewModel = DataContext as MainViewModel;
+            if (e.Key == Key.Enter)
+            {
+                viewModel.DrawMandelCommand.Execute(null);
+            }
+        }
     }
 }

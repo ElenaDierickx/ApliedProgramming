@@ -23,9 +23,15 @@ namespace Presentation
 
         public WriteableBitmap BitmapDisplay { get; private set; }
 
+        public IRelayCommand DrawMandelCommand { get; private set; }
+
+        public int Iterations { get; set; }
+
         public MainViewModel(ILogic logic)
         {
             this.logic = logic;
+            Iterations = 100;
+            DrawMandelCommand = new RelayCommand(DrawMandel);
             CreateBitmap(maxColumn, maxRow);
             DrawMandel();
 
@@ -37,6 +43,7 @@ namespace Presentation
             double dpiY = 96d;
             var pixelFormat = PixelFormats.Pbgra32;
             BitmapDisplay = new WriteableBitmap(width, height, dpiX, dpiY, pixelFormat, null);
+
             OnPropertyChanged(nameof(BitmapDisplay));
         }
 
@@ -54,8 +61,8 @@ namespace Presentation
             {
                 for (int Y = 0; Y < maxColumn; Y++)
                 {
-                    int init = logic.MandelbrotFractal(X, Y);
-                    byte colorValue = (byte)((double)init / 100d * 255d);
+                    int init = logic.MandelbrotFractal(X, Y, Iterations);
+                    byte colorValue = (byte)((double)init / Iterations * 255d);
                     SetPixel(X, Y, Color.FromRgb(colorValue, colorValue, colorValue));
                 }
             }
