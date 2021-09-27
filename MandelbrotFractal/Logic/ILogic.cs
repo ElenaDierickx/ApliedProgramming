@@ -6,5 +6,6 @@ namespace LogicLayer
 {
     public interface ILogic
     {
+        public int MandelbrotFractal(int X, int Y);
     }
 }

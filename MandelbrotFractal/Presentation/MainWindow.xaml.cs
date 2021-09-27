@@ -20,8 +20,9 @@ namespace Presentation
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindow(MainViewModel vm)
         {
+            DataContext = vm;
             InitializeComponent();
         }
     }
