@@ -11,6 +11,7 @@
     <DockPanel LastChildFill="true" Background="{Binding Background}" >
         <StackPanel DockPanel.Dock="Right" Orientation="Vertical" Margin="10">
             <Button Content="Draw" Command="{Binding DrawMandelCommand}" Margin="5"/>
+            <Button Content="Zoom" Command="{Binding ZoomInCommand}" Margin="5"/>
             <StackPanel Orientation="Horizontal" Margin="10">
                 <TextBlock Text="Iterations: " Margin="10,0"/>
                 <TextBox Text="{Binding Iterations, Mode=Default}" Width="50" TextAlignment="Center" />

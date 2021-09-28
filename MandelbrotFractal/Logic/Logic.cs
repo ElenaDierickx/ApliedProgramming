@@ -6,10 +6,10 @@ namespace LogicLayer
 {
     public class Logic : ILogic
     {
-        public int MandelbrotFractal(int X, int Y, int iterations) 
+        public int MandelbrotFractal(int X, int Y, int iterations, double zoom, int offsetX, int offsetY) 
         {
-            double b = X / 150d - 2d;
-            double a = Y / 200d - 2d;
+            double b = (X + offsetY) / (150d * zoom) - 2d;
+            double a = (Y + offsetX) / (200d * zoom) - 2d;
             int iter = 1;
             double x = 0;
             double y = 0;
