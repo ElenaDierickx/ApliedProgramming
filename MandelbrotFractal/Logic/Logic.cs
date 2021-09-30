@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace LogicLayer
 {
@@ -9,9 +10,9 @@ namespace LogicLayer
         public List<MandelPoint> MandelbrotFractal(int maxRow, int maxColumn, int iterations, double zoom, int offsetX, int offsetY)
         {
             var list = new List<MandelPoint>();
-            for (int X = 0; X < maxRow; X++)
+            Parallel.For(0, maxRow, (X, state) =>
             {
-                for (int Y = 0; Y < maxColumn; Y++)
+                Parallel.For(0, maxColumn, (Y, state) =>
                 {
                     double b = ((X + offsetY) / (150d * zoom) - 2d);
                     double a = (Y + offsetX) / (200d * zoom) - 2d;
@@ -28,9 +29,10 @@ namespace LogicLayer
                         r = x * x + y * y;
                         iter++;
                     }
-                    list.Add(new MandelPoint(X, Y, iter));
-                }
-            }
+                    lock (list)
+                        list.Add(new MandelPoint(X, Y, iter));
+                });
+            });
             return list;
         }
     }
