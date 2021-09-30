@@ -97,23 +97,12 @@ namespace Presentation
         {
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
-            for (int X = 0; X < maxRow; X++)
+            var list = logic.MandelbrotFractal(maxRow, maxColumn, Iterations, zoom, offsetX, offsetY);
+            foreach(MandelPoint point in list)
             {
-                for (int Y = 0; Y < maxColumn; Y++)
-                {
-                    int init = logic.MandelbrotFractal(X, Y, Iterations, zoom, offsetX, offsetY);
-                    byte colorValue = (byte)((double)init / Iterations * 255d);
-                    SetPixel(X, Y, Color.FromRgb(colorValue, colorValue, colorValue));
-                }
+                byte colorValue = (byte)(point.iter / Iterations * 255d);
+                SetPixel(point.X, point.Y, Color.FromRgb(colorValue, colorValue, colorValue));
             }
-            //Parallel.For(0, maxRow, (X, state) =>
-            //{
-            //    for (int Y = 0; Y < maxColumn; Y++)
-            //    {
-            //        int init = logic.MandelbrotFractal(X, Y, Iterations, zoom, offsetX, offsetY);
-            //        byte colorValue = (byte)((double)init / Iterations * 255d);
-            //    }
-            //});
             stopWatch.Stop();
             TimeElapsed = stopWatch.ElapsedMilliseconds.ToString();
         }
