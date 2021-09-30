@@ -6,6 +6,6 @@ namespace LogicLayer
 {
     public interface ILogic
     {
-        public List<DoublePoint> MandelbrotFractal(int iterations, int maxRow, int maxColumn);
+        public int MandelbrotFractal(int X, int Y, int iterations);
     }
 }

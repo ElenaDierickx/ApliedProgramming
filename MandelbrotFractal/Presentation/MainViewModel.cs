@@ -57,20 +57,14 @@ namespace Presentation
 
         private void DrawMandel()
         {
-            //for (int X = 0; X < maxRow; X++)
-            //{
-            //    for (int Y = 0; Y < maxColumn; Y++)
-            //    {
-            //        int init = logic.MandelbrotFractal(X, Y, Iterations);
-            //        byte colorValue = (byte)((double)init / Iterations * 255d);
-            //        SetPixel(X, Y, Color.FromRgb(colorValue, colorValue, colorValue));
-            //    }
-            //}
-            var list = logic.MandelbrotFractal(Iterations, maxRow, maxColumn);
-            foreach(DoublePoint point in list)
+            for (int X = 0; X < maxRow; X++)
             {
-                byte colorValue = (byte)(point.iter / Iterations * 255d);
-                SetPixel(point.X, point.Y, Color.FromRgb(colorValue, colorValue, colorValue));
+                for (int Y = 0; Y < maxColumn; Y++)
+                {
+                    int init = logic.MandelbrotFractal(X, Y, Iterations);
+                    byte colorValue = (byte)((double)init / Iterations * 255d);
+                    SetPixel(X, Y, Color.FromRgb(colorValue, colorValue, colorValue));
+                }
             }
         }
     }
