@@ -29,9 +29,29 @@ namespace Presentation
         private void WindowPreviewKeyDown(object sender, KeyEventArgs e)
         {
             var viewModel = DataContext as MainViewModel;
-            if (e.Key == Key.Enter)
+            if (e.Key == Key.E)
             {
-                viewModel.DrawMandelCommand.Execute(null);
+                viewModel.ZoomInCommand.Execute(null);
+            }
+            else if (e.Key == Key.A)
+            {
+                viewModel.ZoomOutCommand.Execute(null);
+            }
+            else if (e.Key == Key.D)
+            {
+                viewModel.OffsetRightCommand.Execute(null);
+            }
+            else if (e.Key == Key.Q)
+            {
+                viewModel.OffsetLeftCommand.Execute(null);
+            }
+            else if (e.Key == Key.Z)
+            {
+                viewModel.OffsetUpCommand.Execute(null);
+            }
+            else if (e.Key == Key.S)
+            {
+                viewModel.OffsetDownCommand.Execute(null);
             }
         }
     }
