@@ -29,34 +29,6 @@ namespace Presentation
             InitializeComponent();
         }
 
-        private void WindowPreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.E)
-            {
-                viewModel.ZoomInCommand.Execute(null);
-            }
-            else if (e.Key == Key.A)
-            {
-                viewModel.ZoomOutCommand.Execute(null);
-            }
-            else if (e.Key == Key.D)
-            {
-                viewModel.OffsetRightCommand.Execute(null);
-            }
-            else if (e.Key == Key.Q)
-            {
-                viewModel.OffsetLeftCommand.Execute(null);
-            }
-            else if (e.Key == Key.Z)
-            {
-                viewModel.OffsetUpCommand.Execute(null);
-            }
-            else if (e.Key == Key.S)
-            {
-                viewModel.OffsetDownCommand.Execute(null);
-            }
-        }
-
         private void Scroll(object sender, MouseWheelEventArgs e)
         {
             if(e.Delta > 0)
@@ -67,10 +39,12 @@ namespace Presentation
             {
                 viewModel.ZoomOutCommand.Execute(null);
             }
-            
-            
         }
-        private void WindowPreviesMouseMove(object sende, MouseEventArgs e)
+
+        private bool pressed = false;
+        private double oldX = 0;
+        private double oldY = 0;
+        private void WindowPreviesMouseMove(object sender, MouseEventArgs e)
         {
             var x = Math.Floor(e.GetPosition(this.bitmapArea).X * this.bitmapArea.Source.Width / this.bitmapArea.ActualWidth);
             var y = Math.Floor(e.GetPosition(this.bitmapArea).Y * this.bitmapArea.Source.Height / this.bitmapArea.ActualHeight);
@@ -88,8 +62,19 @@ namespace Presentation
                 y = 0;
             }
             Point mousePos = new Point(x, y);
+            if(e.LeftButton == MouseButtonState.Pressed && pressed == false)
+            {
+                oldX = x;
+                oldY = y;
+                pressed = true;
+            }
+            if(e.LeftButton == MouseButtonState.Released && pressed)
+            {
+                Point moved = new Point(x - oldX, y - oldY);
+                pressed = false;                
+                viewModel.PanningCommand.Execute(moved);
+            }
             viewModel.MouseChangedCommand.Execute(mousePos);
-            
         }
     }
 }
