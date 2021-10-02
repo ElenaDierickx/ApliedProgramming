@@ -77,14 +77,5 @@ namespace Presentation
             }
             viewModel.MouseChangedCommand.Execute(mousePos);
         }
-
-        private string itPrev = "20";
-        //https://stackoverflow.com/questions/1268552/how-do-i-get-a-textbox-to-only-accept-numeric-input-in-wpf
-        private void IterationInput(object sender, TextCompositionEventArgs e)
-        {
-            Regex reg = new Regex("[^0-9]+");
-            e.Handled = reg.IsMatch(e.Text);
-            
-        }
     }
 }
