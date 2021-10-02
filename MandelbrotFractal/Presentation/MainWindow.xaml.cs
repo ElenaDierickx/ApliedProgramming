@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -62,19 +63,28 @@ namespace Presentation
                 y = 0;
             }
             Point mousePos = new Point(x, y);
-            if(e.LeftButton == MouseButtonState.Pressed && pressed == false)
+            if(e.LeftButton == MouseButtonState.Pressed && pressed == false && x < 800 && x > 0 && y > 0 && y < 600)
             {
                 oldX = x;
                 oldY = y;
                 pressed = true;
             }
-            if(e.LeftButton == MouseButtonState.Released && pressed)
+            if(e.LeftButton == MouseButtonState.Released && pressed && x < 800 && x > 0 && y > 0 && y < 600)
             {
                 Point moved = new Point(x - oldX, y - oldY);
                 pressed = false;                
                 viewModel.PanningCommand.Execute(moved);
             }
             viewModel.MouseChangedCommand.Execute(mousePos);
+        }
+
+        private string itPrev = "20";
+        //https://stackoverflow.com/questions/1268552/how-do-i-get-a-textbox-to-only-accept-numeric-input-in-wpf
+        private void IterationInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex reg = new Regex("[^0-9]+");
+            e.Handled = reg.IsMatch(e.Text);
+            
         }
     }
 }

@@ -22,6 +22,22 @@ namespace Presentation
         private readonly ILogic logic;
         public string Title => "Mandelbrot Fractal";
 
+        public List<int> Iterations { get; set; }
+        private int iteration;
+        public int Iteration
+        {
+            get { return iteration; }
+            set
+            {
+                if (iteration != value)
+                {
+                    iteration = value;
+                    OnPropertyChanged("Iteration");
+                    DrawMandel();
+                }
+            }
+        }
+
         public string timeElapsed;
 
         public string TimeElapsed
@@ -73,9 +89,7 @@ namespace Presentation
         public IRelayCommand ZoomOutCommand { get; private set; }
         public IRelayCommand MouseChangedCommand { get; private set; }
         public IRelayCommand PanningCommand { get; private set; }
-        
-
-        public int Iterations { get; set; }
+        public IRelayCommand DrawMandelCommand { get; private set; }
 
         private double zoom = 1;
         private int offsetX = 0;
@@ -86,14 +100,15 @@ namespace Presentation
         public MainViewModel(ILogic logic)
         {
             this.logic = logic;
-            Iterations = 20;
             ResetCommand = new RelayCommand(ResetMandel);
             ZoomInCommand = new RelayCommand(ZoomInMandel);
             ZoomOutCommand = new RelayCommand(ZoomOutMandel);
+            DrawMandelCommand = new RelayCommand(DrawMandel);
             MouseChangedCommand = new RelayCommand<Point>(MouseChanged);
             PanningCommand = new RelayCommand<Point>(Panning);
             CreateBitmap(maxColumn, maxRow);
-            DrawMandel();
+            Iterations = new List<int> { 5, 10, 25, 100 };
+            Iteration = 25;
 
         }
 
@@ -120,10 +135,10 @@ namespace Presentation
         {
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
-            var list = logic.MandelbrotFractal(maxRow, maxColumn, Iterations, zoom, offsetX, offsetY);
+            var list = logic.MandelbrotFractal(maxRow, maxColumn, Iteration, zoom, offsetX, offsetY);
             foreach(MandelPoint point in list)
             {
-                byte colorValue = (byte)(point.iter / Iterations * 255d);
+                byte colorValue = (byte)(point.iter / Iteration * 255d);
                 SetPixel(point.X, point.Y, Color.FromRgb(colorValue, colorValue, colorValue));
             }
             stopWatch.Stop();
@@ -131,7 +146,6 @@ namespace Presentation
         }
 
         private readonly double zoomFactor = 1.5;
-        private readonly int offsetFactor = 400;
 
         private void ZoomInMandel()
         {
