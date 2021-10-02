@@ -7,7 +7,9 @@
         mc:Ignorable="d"
         Title="{Binding Title}"
         Height="450" Width="800"
-        PreviewKeyDown="WindowPreviewKeyDown">
+        PreviewKeyDown="WindowPreviewKeyDown"
+        MouseWheel="Scroll"
+        Mouse.PreviewMouseMove="WindowPreviesMouseMove">
     <DockPanel LastChildFill="true" Background="{Binding Background}" >
         <StackPanel DockPanel.Dock="Right" Orientation="Vertical" Margin="10">
             <Button Content="Draw" Command="{Binding DrawMandelCommand}" Margin="5"/>
@@ -20,9 +22,19 @@
                 <TextBlock Text="{Binding TimeElapsed, UpdateSourceTrigger=PropertyChanged}" />
                 <TextBlock Text="ms"/>
             </StackPanel>
+            <StackPanel Orientation="Vertical" Margin="10">
+                <TextBlock Text="Mouse Position:"/>
+                <StackPanel Orientation="Horizontal" Margin="10">
+                    <TextBlock Text="{Binding ScrollValue, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock Text="X: "/>
+                    <TextBlock Text="{Binding MousePosition.X, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Text="Y: "/>
+                    <TextBlock Text="{Binding MousePosition.Y, UpdateSourceTrigger=PropertyChanged}"/>
+                </StackPanel>
+            </StackPanel>
         </StackPanel>
         <Border Margin="10" BorderThickness="1" BorderBrush="Black">
-            <Image Source="{Binding BitmapDisplay}" Stretch="Fill"  />
+            <Image Source="{Binding BitmapDisplay}" Stretch="Fill" Name="bitmapArea" />
         </Border>
     </DockPanel>
 </Window>

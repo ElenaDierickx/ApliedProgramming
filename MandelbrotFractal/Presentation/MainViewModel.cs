@@ -37,6 +37,34 @@ namespace Presentation
             }
         }
 
+        public double scrollValue;
+        public double ScrollValue
+        {
+            get
+            {
+                return scrollValue;
+            }
+            set
+            {
+                scrollValue = value;
+                OnPropertyChanged("ScrollValue");
+            }
+        }
+
+        public Point mousePosition;
+        public Point MousePosition
+        {
+            get
+            {
+                return mousePosition;
+            }
+            set
+            {
+                mousePosition = value;
+                OnPropertyChanged("MousePosition");
+            }
+        }
+
         public WriteableBitmap BitmapDisplay { get; private set; }
 
         public IRelayCommand DrawMandelCommand { get; private set; }
@@ -48,6 +76,7 @@ namespace Presentation
         public IRelayCommand OffsetLeftCommand { get; private set; }
         public IRelayCommand OffsetUpCommand { get; private set; }
         public IRelayCommand OffsetDownCommand { get; private set; }
+        public IRelayCommand MouseChangedCommand { get; private set; }
 
         public int Iterations { get; set; }
 
@@ -63,12 +92,12 @@ namespace Presentation
             Iterations = 20;
             DrawMandelCommand = new RelayCommand(DrawMandel);
             ZoomInCommand = new RelayCommand(ZoomInMandel);
-
             ZoomOutCommand = new RelayCommand(ZoomOutMandel);
             OffsetRightCommand = new RelayCommand(OffsetMandelRight);
             OffsetLeftCommand = new RelayCommand(OffsetMandelLeft);
             OffsetUpCommand = new RelayCommand(OffsetMandelUp);
             OffsetDownCommand = new RelayCommand(OffsetMandelDown);
+            MouseChangedCommand = new RelayCommand<Point>(MouseChanged);
             CreateBitmap(maxColumn, maxRow);
             DrawMandel();
 
@@ -107,8 +136,8 @@ namespace Presentation
             TimeElapsed = stopWatch.ElapsedMilliseconds.ToString();
         }
 
-        private int zoomFactor = 2;
-        private int offsetFactor = 400;
+        private readonly int zoomFactor = 2;
+        private readonly int offsetFactor = 400;
 
         private void ZoomInMandel()
         {
@@ -144,6 +173,11 @@ namespace Presentation
         {
             offsetY += offsetFactor;
             DrawMandel();
+        }
+
+        private void MouseChanged(Point point)
+        {
+            MousePosition = point;
         }
     }
 }
