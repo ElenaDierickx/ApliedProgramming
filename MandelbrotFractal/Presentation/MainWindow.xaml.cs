@@ -72,7 +72,6 @@ namespace Presentation
         }
         private void WindowPreviesMouseMove(object sende, MouseEventArgs e)
         {
-            
             var x = Math.Floor(e.GetPosition(this.bitmapArea).X * this.bitmapArea.Source.Width / this.bitmapArea.ActualWidth);
             var y = Math.Floor(e.GetPosition(this.bitmapArea).Y * this.bitmapArea.Source.Height / this.bitmapArea.ActualHeight);
             if (x > 800)
@@ -85,7 +84,7 @@ namespace Presentation
             if (y > 600)
             {
                 y = 600;
-            } else if(y < 0) {
+            } else if(y < 0 ) {
                 y = 0;
             }
             Point mousePos = new Point(x, y);

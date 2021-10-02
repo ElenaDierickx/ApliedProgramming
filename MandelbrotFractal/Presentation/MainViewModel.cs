@@ -67,7 +67,7 @@ namespace Presentation
 
         public WriteableBitmap BitmapDisplay { get; private set; }
 
-        public IRelayCommand DrawMandelCommand { get; private set; }
+        public IRelayCommand ResetCommand { get; private set; }
 
         public IRelayCommand ZoomInCommand { get; private set; }
         public IRelayCommand ZoomOutCommand { get; private set; }
@@ -90,7 +90,7 @@ namespace Presentation
         {
             this.logic = logic;
             Iterations = 20;
-            DrawMandelCommand = new RelayCommand(DrawMandel);
+            ResetCommand = new RelayCommand(ResetMandel);
             ZoomInCommand = new RelayCommand(ZoomInMandel);
             ZoomOutCommand = new RelayCommand(ZoomOutMandel);
             OffsetRightCommand = new RelayCommand(OffsetMandelRight);
@@ -178,6 +178,14 @@ namespace Presentation
         private void MouseChanged(Point point)
         {
             MousePosition = point;
+        }
+
+        private void ResetMandel()
+        {
+            offsetX = 0;
+            offsetY = 0;
+            zoom = 1;
+            DrawMandel();
         }
     }
 }
