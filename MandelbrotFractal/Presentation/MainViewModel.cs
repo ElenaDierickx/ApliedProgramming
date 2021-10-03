@@ -137,8 +137,8 @@ namespace Presentation
             MouseChangedCommand = new RelayCommand<Point>(MouseChanged);
             PanningCommand = new RelayCommand<Point>(Panning);
             CreateBitmap(maxColumn, maxRow);
-            Iterations = new List<int> { 5, 10, 25, 100 };
-            Iteration = 25;
+            Iterations = new List<int> { 5, 10, 25, 100, 150, 200, 250 };
+            Iteration = 200;
 
         }
 
@@ -175,19 +175,19 @@ namespace Presentation
             TimeElapsed = stopWatch.ElapsedMilliseconds.ToString();
         }
 
-        private readonly double zoomFactor = 1.5;
+        private readonly double zoomFactor = 0.5;
 
         private void ZoomInMandel()
         {
             Zoom *= zoomFactor;
-            offsetX += mousePosition.X;
-            offsetY += mousePosition.Y;
+            offsetX += MousePosition.X / 800d * Zoom;
+            offsetY += MousePosition.Y / 600d * Zoom;
             DrawMandel();
         }
 
         private void ZoomOutMandel()
         {
-            if (Zoom > 1)
+            if (Zoom < 1)
             {
                 Zoom /= zoomFactor;
                 offsetX -= mousePosition.X;
@@ -212,8 +212,8 @@ namespace Presentation
 
         private void Panning(Point moved)
         {
-            offsetX -= (int)moved.X;
-            offsetY -= (int)moved.Y;
+            offsetX -= moved.X;
+            offsetY -= moved.Y;
             DrawMandel();
         }
     }

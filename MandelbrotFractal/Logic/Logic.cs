@@ -14,8 +14,10 @@ namespace LogicLayer
             {
                 Parallel.For(0, maxColumn, (Y, state) =>
                 {
-                    double b = (X + offsetY) / (150d * zoom) - 2d;
-                    double a = (Y + offsetX) / (200d * zoom) - 2d;
+                    //double b = (X + offsetY) / (150d * zoom) - 2d;
+                    //double a = (Y + offsetX) / (200d * zoom) - 2d;
+                    double b = (X / 600d * 4d - 2d)  * zoom + (offsetY / 600d) * zoom;
+                    double a = (Y / 800d * 4d - 2d) * zoom + (offsetX / 800d) * zoom;
                     int iter = 1;
                     double x = 0;
                     double y = 0;
