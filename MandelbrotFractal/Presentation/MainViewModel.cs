@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -38,7 +39,7 @@ namespace Presentation
             }
         }
 
-        public string timeElapsed;
+        private string timeElapsed;
 
         public string TimeElapsed
         {
@@ -53,7 +54,7 @@ namespace Presentation
             }
         }
 
-        public double scrollValue;
+        private double scrollValue;
         public double ScrollValue
         {
             get
@@ -67,7 +68,7 @@ namespace Presentation
             }
         }
 
-        public Point mousePosition;
+        private Point mousePosition;
         public Point MousePosition
         {
             get
@@ -78,6 +79,22 @@ namespace Presentation
             {
                 mousePosition = value;
                 OnPropertyChanged("MousePosition");
+            }
+        }
+
+        private List<MandelPoint> mandelPoints;
+
+        private double iterationPoint;
+        public double IterationPoint
+        {
+            get
+            {
+                return iterationPoint;
+            }
+            set
+            {
+                iterationPoint = value;
+                OnPropertyChanged("IterationPoint");
             }
         }
 
@@ -92,8 +109,21 @@ namespace Presentation
         public IRelayCommand DrawMandelCommand { get; private set; }
 
         private double zoom = 1;
-        private int offsetX = 0;
-        private int offsetY = 0;
+        public double Zoom
+        {
+            get
+            {
+                return zoom;
+            }
+            set
+            {
+                zoom = value;
+                OnPropertyChanged("Zoom");
+            }
+        }
+
+        private double offsetX = 0;
+        private double offsetY = 0;
 
        
 
@@ -135,8 +165,8 @@ namespace Presentation
         {
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
-            var list = logic.MandelbrotFractal(maxRow, maxColumn, Iteration, zoom, offsetX, offsetY);
-            foreach(MandelPoint point in list)
+            mandelPoints = logic.MandelbrotFractal(maxRow, maxColumn, Iteration, Zoom, offsetX, offsetY);
+            foreach(MandelPoint point in mandelPoints)
             {
                 byte colorValue = (byte)(point.iter / Iteration * 255d);
                 SetPixel(point.X, point.Y, Color.FromRgb(colorValue, colorValue, colorValue));
@@ -149,19 +179,19 @@ namespace Presentation
 
         private void ZoomInMandel()
         {
-            zoom += zoomFactor;
-            offsetX += (int)mousePosition.X;
-            offsetY += (int)mousePosition.Y;
+            Zoom *= zoomFactor;
+            offsetX += mousePosition.X;
+            offsetY += mousePosition.Y;
             DrawMandel();
         }
 
         private void ZoomOutMandel()
         {
-            if (zoom > 1)
+            if (Zoom > 1)
             {
-                zoom -= zoomFactor;
-                offsetX -= (int)mousePosition.X;
-                offsetY -= (int)mousePosition.Y;
+                Zoom /= zoomFactor;
+                offsetX -= mousePosition.X;
+                offsetY -= mousePosition.Y;
                 DrawMandel();
             }
         }
@@ -169,13 +199,14 @@ namespace Presentation
         private void MouseChanged(Point point)
         {
             MousePosition = point;
+            IterationPoint = mandelPoints.Where(x => x.X == point.X && x.Y == point.Y).Select(x => x.iter).FirstOrDefault();
         }
 
         private void ResetMandel()
         {
             offsetX = 0;
             offsetY = 0;
-            zoom = 1;
+            Zoom = 1;
             DrawMandel();
         }
 

@@ -7,14 +7,14 @@ namespace LogicLayer
 {
     public class Logic : ILogic
     {
-        public List<MandelPoint> MandelbrotFractal(int maxRow, int maxColumn, int iterations, double zoom, int offsetX, int offsetY)
+        public List<MandelPoint> MandelbrotFractal(int maxRow, int maxColumn, int iterations, double zoom, double offsetX, double offsetY)
         {
             var list = new List<MandelPoint>();
             Parallel.For(0, maxRow, (X, state) =>
             {
                 Parallel.For(0, maxColumn, (Y, state) =>
                 {
-                    double b = ((X + offsetY) / (150d * zoom) - 2d);
+                    double b = (X + offsetY) / (150d * zoom) - 2d;
                     double a = (Y + offsetX) / (200d * zoom) - 2d;
                     int iter = 1;
                     double x = 0;
