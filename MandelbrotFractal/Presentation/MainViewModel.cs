@@ -133,7 +133,6 @@ namespace Presentation
             ResetCommand = new RelayCommand(ResetMandel);
             ZoomInCommand = new RelayCommand(ZoomInMandel);
             ZoomOutCommand = new RelayCommand(ZoomOutMandel);
-            DrawMandelCommand = new RelayCommand(DrawMandel);
             MouseChangedCommand = new RelayCommand<Point>(MouseChanged);
             PanningCommand = new RelayCommand<Point>(Panning);
             CreateBitmap(maxColumn, maxRow);
@@ -165,34 +164,38 @@ namespace Presentation
             BitmapDisplay.WritePixels(rectangle, colorInts, BitmapDisplay.BackBufferStride, 0, 0);
         }
 
-        private void DrawMandel()
+        private async Task DrawMandel()
         {
-            Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
-            mandelPoints = logic.MandelbrotFractal(maxRow, maxColumn, Iteration, Zoom, offsetX, offsetY);
+            await Task.Run(() =>
+            {
+                Stopwatch stopWatch = new Stopwatch();
+                stopWatch.Start();
+                mandelPoints = logic.MandelbrotFractal(maxRow, maxColumn, Iteration, Zoom, offsetX, offsetY);
+                stopWatch.Stop();
+                TimeElapsed = stopWatch.ElapsedMilliseconds.ToString();
+            });
             SetPixels();
-            stopWatch.Stop();
-            TimeElapsed = stopWatch.ElapsedMilliseconds.ToString();
+
         }
 
         private readonly double zoomFactor = 0.5;
 
-        private void ZoomInMandel()
+        private async void ZoomInMandel()
         {
             Zoom *= zoomFactor;
             offsetX += MousePosition.X / 800d * Zoom;
             offsetY += MousePosition.Y / 600d * Zoom;
-            DrawMandel();
+            await DrawMandel();
         }
 
-        private void ZoomOutMandel()
+        private async void ZoomOutMandel()
         {
             if (Zoom < 1)
             {
                 Zoom /= zoomFactor;
                 offsetX -= mousePosition.X;
                 offsetY -= mousePosition.Y;
-                DrawMandel();
+                await DrawMandel();
             }
         }
 
@@ -202,19 +205,19 @@ namespace Presentation
             IterationPoint = mandelPoints[(int)point.Y, (int)point.X];
         }
 
-        private void ResetMandel()
+        private async void ResetMandel()
         {
             offsetX = 0;
             offsetY = 0;
             Zoom = 1;
-            DrawMandel();
+            await DrawMandel();
         }
 
-        private void Panning(Point moved)
+        private async void Panning(Point moved)
         {
             offsetX -= moved.X;
             offsetY -= moved.Y;
-            DrawMandel();
+            await DrawMandel();
         }
     }
 }
