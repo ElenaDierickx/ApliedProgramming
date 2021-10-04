@@ -82,10 +82,10 @@ namespace Presentation
             }
         }
 
-        private List<MandelPoint> mandelPoints;
+        private int[,] mandelPoints;
 
-        private double iterationPoint;
-        public double IterationPoint
+        private int iterationPoint;
+        public int IterationPoint
         {
             get
             {
@@ -139,7 +139,6 @@ namespace Presentation
             CreateBitmap(maxColumn, maxRow);
             Iterations = new List<int> { 5, 10, 25, 100, 150, 200, 250 };
             Iteration = 200;
-
         }
 
         private void CreateBitmap(int width, int height)
@@ -148,17 +147,22 @@ namespace Presentation
             double dpiY = 96d;
             var pixelFormat = PixelFormats.Pbgra32;
             BitmapDisplay = new WriteableBitmap(width, height, dpiX, dpiY, pixelFormat, null);
-
             OnPropertyChanged(nameof(BitmapDisplay));
         }
 
-        private void SetPixel(int row, int column, Color color)
+        private void SetPixels()
         {
-            uint intColor = BitConverter.ToUInt32(new byte[] { color.B, color.G, color.R, color.A });
-            uint[] pixels = new uint[] { intColor };
-            var rectangle = new Int32Rect(0, 0, 1, 1);
-            BitmapDisplay.WritePixels(rectangle, pixels, BitmapDisplay.BackBufferStride, column, row);
-            
+            int[,] colorInts = new int[maxRow, maxColumn];
+            Parallel.For(0, maxRow, (X, state) =>
+            {
+                Parallel.For(0, maxColumn, (Y, state) =>
+                {
+                    byte colorValue = (byte)(mandelPoints[X, Y] / Iteration * 255d);
+                    colorInts[X, Y] = BitConverter.ToInt32(new byte[] { colorValue, colorValue, colorValue, 255 });
+                });
+            });
+            var rectangle = new Int32Rect(0, 0, maxColumn, maxRow);
+            BitmapDisplay.WritePixels(rectangle, colorInts, BitmapDisplay.BackBufferStride, 0, 0);
         }
 
         private void DrawMandel()
@@ -166,11 +170,7 @@ namespace Presentation
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
             mandelPoints = logic.MandelbrotFractal(maxRow, maxColumn, Iteration, Zoom, offsetX, offsetY);
-            foreach(MandelPoint point in mandelPoints)
-            {
-                byte colorValue = (byte)(point.iter / Iteration * 255d);
-                SetPixel(point.X, point.Y, Color.FromRgb(colorValue, colorValue, colorValue));
-            }
+            SetPixels();
             stopWatch.Stop();
             TimeElapsed = stopWatch.ElapsedMilliseconds.ToString();
         }
@@ -199,7 +199,7 @@ namespace Presentation
         private void MouseChanged(Point point)
         {
             MousePosition = point;
-            IterationPoint = mandelPoints.Where(x => x.X == point.X && x.Y == point.Y).Select(x => x.iter).FirstOrDefault();
+            IterationPoint = mandelPoints[(int)point.Y, (int)point.X];
         }
 
         private void ResetMandel()
