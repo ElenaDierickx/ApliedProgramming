@@ -16,6 +16,10 @@
                 <TextBlock Text="Iterations: " Margin="10,0"/>
                 <ComboBox ItemsSource="{Binding Iterations}" SelectedItem="{Binding Iteration}" />
             </StackPanel>
+            <StackPanel Orientation="Vertical" Margin="10">
+                <TextBlock Text="Color Scheme: " Margin="10,0"/>
+                <ComboBox ItemsSource="{Binding ColorSchemes}" SelectedItem="{Binding ColorScheme}" />
+            </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="10">
                 <TextBlock Text="Time elapsed: "/>
                 <TextBlock Text="{Binding TimeElapsed, UpdateSourceTrigger=PropertyChanged}" />

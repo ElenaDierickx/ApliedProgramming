@@ -39,6 +39,23 @@ namespace Presentation
             }
         }
 
+
+        public List<string> ColorSchemes { get; set; }
+        private string colorScheme;
+        public string ColorScheme
+        {
+            get { return colorScheme; }
+            set
+            {
+                if (colorScheme != value)
+                {
+                    colorScheme = value;
+                    OnPropertyChanged("ColorScheme");
+                    DrawMandel();
+                }
+            }
+        }
+
         private string timeElapsed;
 
         public string TimeElapsed
@@ -124,7 +141,6 @@ namespace Presentation
 
         private double offsetX = 0;
         private double offsetY = 0;
-
        
 
         public MainViewModel(ILogic logic)
@@ -136,8 +152,10 @@ namespace Presentation
             MouseChangedCommand = new RelayCommand<Point>(MouseChanged);
             PanningCommand = new RelayCommand<Point>(Panning);
             CreateBitmap(maxColumn, maxRow);
-            Iterations = new List<int> { 5, 10, 25, 100, 150, 200, 250 };
+            Iterations = new List<int> { 5, 10, 25, 100, 150, 200, 250, 500, 750, 1000 };
             Iteration = 200;
+            ColorSchemes = new List<string> { "GreyScale", "BlueScale" };
+            ColorScheme = "GreyScale";
         }
 
         private void CreateBitmap(int width, int height)
@@ -151,6 +169,24 @@ namespace Presentation
 
         private void SetPixels()
         {
+            int[,] colorInts;
+            switch (ColorScheme){
+                case "GreyScale":
+                    colorInts = GreyScale();
+                    break;
+                case "BlueScale":
+                    colorInts = BlueScale();
+                    break;
+                default:
+                    colorInts = GreyScale();
+                    break;
+            }
+            var rectangle = new Int32Rect(0, 0, maxColumn, maxRow);
+            BitmapDisplay.WritePixels(rectangle, colorInts, BitmapDisplay.BackBufferStride, 0, 0);
+        }
+
+        private int[,] GreyScale()
+        {
             int[,] colorInts = new int[maxRow, maxColumn];
             Parallel.For(0, maxRow, (X, state) =>
             {
@@ -160,8 +196,21 @@ namespace Presentation
                     colorInts[X, Y] = BitConverter.ToInt32(new byte[] { colorValue, colorValue, colorValue, 255 });
                 });
             });
-            var rectangle = new Int32Rect(0, 0, maxColumn, maxRow);
-            BitmapDisplay.WritePixels(rectangle, colorInts, BitmapDisplay.BackBufferStride, 0, 0);
+            return colorInts;
+        }
+
+        private int[,] BlueScale()
+        {
+            int[,] colorInts = new int[maxRow, maxColumn];
+            Parallel.For(0, maxRow, (X, state) =>
+            {
+                Parallel.For(0, maxColumn, (Y, state) =>
+                {
+                    byte colorValue = (byte)(mandelPoints[X, Y] / Iteration * 255d);
+                    colorInts[X, Y] = BitConverter.ToInt32(new byte[] { colorValue, 0, 0, 255 });
+                });
+            });
+            return colorInts;
         }
 
         private async Task DrawMandel()
@@ -175,16 +224,15 @@ namespace Presentation
                 TimeElapsed = stopWatch.ElapsedMilliseconds.ToString();
             });
             SetPixels();
-
         }
 
-        private readonly double zoomFactor = 0.5;
+        private readonly double zoomFactor = 0.75;
 
         private async void ZoomInMandel()
         {
             Zoom *= zoomFactor;
-            offsetX += MousePosition.X / 800d * Zoom;
-            offsetY += MousePosition.Y / 600d * Zoom;
+            offsetX += 70 / Zoom;
+            offsetY -= 55 / Zoom;
             await DrawMandel();
         }
 
@@ -193,8 +241,7 @@ namespace Presentation
             if (Zoom < 1)
             {
                 Zoom /= zoomFactor;
-                offsetX -= mousePosition.X;
-                offsetY -= mousePosition.Y;
+
                 await DrawMandel();
             }
         }
@@ -215,8 +262,8 @@ namespace Presentation
 
         private async void Panning(Point moved)
         {
-            offsetX -= moved.X;
-            offsetY -= moved.Y;
+            offsetX -= moved.X * 2;
+            offsetY -= moved.Y * 2;
             await DrawMandel();
         }
     }
