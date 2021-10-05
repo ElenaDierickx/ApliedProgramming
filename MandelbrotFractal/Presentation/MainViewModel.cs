@@ -8,10 +8,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows;
 
 namespace Presentation
 {
@@ -85,8 +85,8 @@ namespace Presentation
             }
         }
 
-        private Point mousePosition;
-        public Point MousePosition
+        private DoublePoint mousePosition;
+        public DoublePoint MousePosition
         {
             get
             {
@@ -154,7 +154,7 @@ namespace Presentation
             CreateBitmap(maxColumn, maxRow);
             Iterations = new List<int> { 5, 10, 25, 100, 150, 200, 250, 500, 750, 1000 };
             Iteration = 200;
-            ColorSchemes = new List<string> { "GreyScale", "BlueScale", "Banding" };
+            ColorSchemes = new List<string> { "GreyScale", "Banding", "UglyBanding" };
             ColorScheme = "GreyScale";
         }
 
@@ -172,67 +172,23 @@ namespace Presentation
             int[,] colorInts;
             switch (ColorScheme){
                 case "GreyScale":
-                    colorInts = GreyScale();
-                    break;
-                case "BlueScale":
-                    colorInts = BlueScale();
+                    colorInts = logic.GreyScale(maxRow, maxColumn, mandelPoints, Iteration);
                     break;
                 case "Banding":
-                    colorInts = Banding();
+                    colorInts = logic.Banding(maxRow, maxColumn, mandelPoints);
+                    break;
+                case "UglyBanding":
+                    colorInts = logic.UglyBanding(maxRow, maxColumn, mandelPoints);
                     break;
                 default:
-                    colorInts = GreyScale();
+                    colorInts = logic.GreyScale(maxRow, maxColumn, mandelPoints, Iteration);
                     break;
             }
             var rectangle = new Int32Rect(0, 0, maxColumn, maxRow);
             BitmapDisplay.WritePixels(rectangle, colorInts, BitmapDisplay.BackBufferStride, 0, 0);
         }
 
-        private int[,] GreyScale()
-        {
-            int[,] colorInts = new int[maxRow, maxColumn];
-            Parallel.For(0, maxRow, (X) =>
-            {
-                for (int Y = 0; Y < maxColumn; Y++)
-                {
-                    byte colorValue = (byte)(mandelPoints[X, Y] / Iteration * 255d);
-                    colorInts[X, Y] = BitConverter.ToInt32(new byte[] { colorValue, colorValue, colorValue, 255 });
-                }
-            });
-            return colorInts;
-        }
-
-        private int[,] BlueScale()
-        {
-            int[,] colorInts = new int[maxRow, maxColumn];
-            Parallel.For(0, maxRow, (X) =>
-            {
-                for(int Y = 0; Y < maxColumn; Y++)
-                {
-                    byte colorValue = (byte)(mandelPoints[X, Y] / Iteration * 255d);
-                    colorInts[X, Y] = BitConverter.ToInt32(new byte[] { colorValue, 0, 0, 255 });
-                }
-            });
-            return colorInts;
-        }
-
-        private int[,] Banding()
-        {
-            int[,] colorInts = new int[maxRow, maxColumn];
-            Parallel.For(0, maxRow, (X) =>
-            {
-                for (int Y = 0; Y < maxColumn; Y++)
-                {
-                    byte colorValue = 0;
-                    if (mandelPoints[X, Y] % 2 != 0)
-                    {
-                        colorValue = 255;
-                    }
-                    colorInts[X, Y] = BitConverter.ToInt32(new byte[] { colorValue, colorValue, colorValue, 255 });
-                    }
-                });
-            return colorInts;
-        }
+        
 
         private async Task DrawMandel()
         {
@@ -247,7 +203,7 @@ namespace Presentation
             SetPixels();
         }
 
-        private readonly double zoomFactor = 0.75;
+        private readonly double zoomFactor = 2;
 
         private async void ZoomInMandel()
         {
@@ -257,7 +213,7 @@ namespace Presentation
 
         private async void ZoomOutMandel()
         {
-            if (Zoom < 1)
+            if (Zoom > 1)
             {
                 Zoom /= zoomFactor;
                 await DrawMandel();
@@ -266,7 +222,7 @@ namespace Presentation
 
         private void MouseChanged(Point point)
         {
-            MousePosition = point;
+            MousePosition = logic.Scaling((int)point.X, (int)point.Y, maxRow, maxColumn, Zoom, offsetX, offsetY);
             IterationPoint = mandelPoints[(int)point.Y, (int)point.X];
         }
 
@@ -280,8 +236,8 @@ namespace Presentation
 
         private async void Panning(Point moved)
         {
-            offsetX -= moved.X / maxColumn * Zoom;
-            offsetY -= moved.Y / maxRow * Zoom;
+            offsetX -= moved.X / maxColumn / Zoom;
+            offsetY -= moved.Y / maxRow / Zoom;
             await DrawMandel();
         }
     }
