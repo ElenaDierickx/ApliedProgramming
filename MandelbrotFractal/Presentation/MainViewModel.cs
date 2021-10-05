@@ -154,7 +154,7 @@ namespace Presentation
             CreateBitmap(maxColumn, maxRow);
             Iterations = new List<int> { 5, 10, 25, 100, 150, 200, 250, 500, 750, 1000 };
             Iteration = 200;
-            ColorSchemes = new List<string> { "GreyScale", "BlueScale" };
+            ColorSchemes = new List<string> { "GreyScale", "BlueScale", "Banding" };
             ColorScheme = "GreyScale";
         }
 
@@ -176,6 +176,9 @@ namespace Presentation
                     break;
                 case "BlueScale":
                     colorInts = BlueScale();
+                    break;
+                case "Banding":
+                    colorInts = Banding();
                     break;
                 default:
                     colorInts = GreyScale();
@@ -210,6 +213,24 @@ namespace Presentation
                     colorInts[X, Y] = BitConverter.ToInt32(new byte[] { colorValue, 0, 0, 255 });
                 }
             });
+            return colorInts;
+        }
+
+        private int[,] Banding()
+        {
+            int[,] colorInts = new int[maxRow, maxColumn];
+            Parallel.For(0, maxRow, (X) =>
+            {
+                for (int Y = 0; Y < maxColumn; Y++)
+                {
+                    byte colorValue = 0;
+                    if (mandelPoints[X, Y] % 2 != 0)
+                    {
+                        colorValue = 255;
+                    }
+                    colorInts[X, Y] = BitConverter.ToInt32(new byte[] { colorValue, colorValue, colorValue, 255 });
+                    }
+                });
             return colorInts;
         }
 
