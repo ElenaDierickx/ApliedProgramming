@@ -99,6 +99,20 @@ namespace Presentation
             }
         }
 
+        private DoublePoint cornerPosition;
+        public DoublePoint CornerPosition
+        {
+            get
+            {
+                return cornerPosition;
+            }
+            set
+            {
+                cornerPosition = value;
+                OnPropertyChanged("CornerPosition");
+            }
+        }
+
         private int[,] mandelPoints;
 
         private int iterationPoint;
@@ -156,6 +170,7 @@ namespace Presentation
             Iteration = 200;
             ColorSchemes = new List<string> { "GreyScale", "Banding", "UglyBanding" };
             ColorScheme = "GreyScale";
+            CornerPosition = logic.Scaling(0, maxRow, maxRow, maxColumn, Zoom, offsetX, offsetY);
         }
 
         private void CreateBitmap(int width, int height)
@@ -208,6 +223,7 @@ namespace Presentation
         private async void ZoomInMandel()
         {
             Zoom *= zoomFactor;
+            CornerPosition = logic.Scaling(0, maxRow, maxRow, maxColumn, Zoom, offsetX, offsetY);
             await DrawMandel();
         }
 
@@ -216,6 +232,7 @@ namespace Presentation
             if (Zoom > 1)
             {
                 Zoom /= zoomFactor;
+                CornerPosition = logic.Scaling(0, maxRow, maxRow, maxColumn, Zoom, offsetX, offsetY);
                 await DrawMandel();
             }
         }
@@ -231,6 +248,7 @@ namespace Presentation
             offsetX = 0;
             offsetY = 0;
             Zoom = 1;
+            CornerPosition = logic.Scaling(0, maxRow, maxRow, maxColumn, Zoom, offsetX, offsetY);
             await DrawMandel();
         }
 
@@ -238,6 +256,7 @@ namespace Presentation
         {
             offsetX -= moved.X / maxColumn / Zoom;
             offsetY -= moved.Y / maxRow / Zoom;
+            CornerPosition = logic.Scaling(0, maxRow, maxRow, maxColumn, Zoom, offsetX, offsetY);
             await DrawMandel();
         }
     }

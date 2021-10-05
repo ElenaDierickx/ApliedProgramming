@@ -9,7 +9,7 @@ namespace LogicLayer
 {
     public class Logic : ILogic
     {
-        private List<Color> colors = new List<Color> { Color.Aquamarine, Color.Green, Color.Red, Color.Yellow, Color.Orange };
+        private readonly List<Color> colors = new List<Color> { Color.Aquamarine, Color.Green, Color.Red, Color.Yellow, Color.Orange };
         public int[,] MandelbrotFractal(int maxRow, int maxColumn, int iterations, double zoom, double offsetX, double offsetY)
         {
             int[,] mandel = new int[maxRow, maxColumn];

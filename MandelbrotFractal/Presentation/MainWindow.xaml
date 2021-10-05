@@ -30,8 +30,15 @@
                 <StackPanel Orientation="Horizontal" Margin="10">
                     <TextBlock Text="X: "/>
                     <TextBlock Text="{Binding MousePosition.X, UpdateSourceTrigger=PropertyChanged}"/>
-                    <TextBlock Text="Y: "/>
+                    <TextBlock Text=" Y: "/>
                     <TextBlock Text="{Binding MousePosition.Y, UpdateSourceTrigger=PropertyChanged}"/>
+                </StackPanel>
+                <TextBlock Text="Corners:"/>
+                <StackPanel Orientation="Horizontal" Margin="10">
+                    <TextBlock Text="X: "/>
+                    <TextBlock Text="{Binding CornerPosition.X, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Text=" Y: "/>
+                    <TextBlock Text="{Binding CornerPosition.Y, UpdateSourceTrigger=PropertyChanged}"/>
                 </StackPanel>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="10">
