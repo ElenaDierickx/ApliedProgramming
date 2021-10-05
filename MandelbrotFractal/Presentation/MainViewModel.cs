@@ -188,13 +188,13 @@ namespace Presentation
         private int[,] GreyScale()
         {
             int[,] colorInts = new int[maxRow, maxColumn];
-            Parallel.For(0, maxRow, (X, state) =>
+            Parallel.For(0, maxRow, (X) =>
             {
-                Parallel.For(0, maxColumn, (Y, state) =>
+                for (int Y = 0; Y < maxColumn; Y++)
                 {
                     byte colorValue = (byte)(mandelPoints[X, Y] / Iteration * 255d);
                     colorInts[X, Y] = BitConverter.ToInt32(new byte[] { colorValue, colorValue, colorValue, 255 });
-                });
+                }
             });
             return colorInts;
         }
@@ -202,13 +202,13 @@ namespace Presentation
         private int[,] BlueScale()
         {
             int[,] colorInts = new int[maxRow, maxColumn];
-            Parallel.For(0, maxRow, (X, state) =>
+            Parallel.For(0, maxRow, (X) =>
             {
-                Parallel.For(0, maxColumn, (Y, state) =>
+                for(int Y = 0; Y < maxColumn; Y++)
                 {
                     byte colorValue = (byte)(mandelPoints[X, Y] / Iteration * 255d);
                     colorInts[X, Y] = BitConverter.ToInt32(new byte[] { colorValue, 0, 0, 255 });
-                });
+                }
             });
             return colorInts;
         }
@@ -231,8 +231,6 @@ namespace Presentation
         private async void ZoomInMandel()
         {
             Zoom *= zoomFactor;
-            offsetX += 70 / Zoom;
-            offsetY -= 55 / Zoom;
             await DrawMandel();
         }
 
@@ -241,7 +239,6 @@ namespace Presentation
             if (Zoom < 1)
             {
                 Zoom /= zoomFactor;
-
                 await DrawMandel();
             }
         }
@@ -262,8 +259,8 @@ namespace Presentation
 
         private async void Panning(Point moved)
         {
-            offsetX -= moved.X * 2;
-            offsetY -= moved.Y * 2;
+            offsetX -= moved.X / maxColumn * Zoom;
+            offsetY -= moved.Y / maxRow * Zoom;
             await DrawMandel();
         }
     }

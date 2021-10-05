@@ -10,12 +10,12 @@ namespace LogicLayer
         public int[,] MandelbrotFractal(int maxRow, int maxColumn, int iterations, double zoom, double offsetX, double offsetY)
         {
             int[,] mandel = new int[maxRow, maxColumn];
-            Parallel.For(0, maxRow, (X, state) =>
+            Parallel.For(0, maxRow, (X) =>
             {
-                Parallel.For(0, maxColumn, (Y, state) =>
+                for (int Y = 0; Y < maxColumn; Y++)
                 {
-                    double b = (X / 600d * 4d - 2d) * zoom + (offsetY / 600d) * zoom;
-                    double a = (Y / 800d * 4d - 2d) * zoom + (offsetX / 800d) * zoom;
+                    double b = (X / (double)maxRow * 4d - 2d) * zoom + offsetY;
+                    double a = (Y / (double)maxColumn * 4d - 2d) * zoom + offsetX;
                     int iter = 1;
                     double x = 0;
                     double y = 0;
@@ -31,7 +31,7 @@ namespace LogicLayer
                     }
                     lock (mandel)
                         mandel[X, Y] = iter;
-                });
+                }
             });
             return mandel;
         }
