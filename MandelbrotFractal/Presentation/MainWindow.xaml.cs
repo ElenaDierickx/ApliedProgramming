@@ -49,14 +49,14 @@ namespace Presentation
         {
             var x = Math.Floor(e.GetPosition(this.bitmapArea).X * this.bitmapArea.Source.Width / this.bitmapArea.ActualWidth);
             var y = Math.Floor(e.GetPosition(this.bitmapArea).Y * this.bitmapArea.Source.Height / this.bitmapArea.ActualHeight);
-            if (x > 799)
+            if (x >= 800)
             {
                 x = 799;
             } else if (x < 0)
             {
                 x = 0;
             }
-            if (y > 599)
+            if (y >= 600)
             {
                 y = 599;
             } else if(y < 0 ) {

@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -172,45 +173,17 @@ namespace Presentation
             int[,] colorInts;
             switch (ColorScheme){
                 case "GreyScale":
-                    colorInts = GreyScale();
+                    colorInts = logic.GreyScale(maxRow, maxColumn, mandelPoints, Iteration);
                     break;
                 case "BlueScale":
-                    colorInts = BlueScale();
+                    colorInts = logic.BlueScale(maxRow, maxColumn, mandelPoints, Iteration);
                     break;
                 default:
-                    colorInts = GreyScale();
+                    colorInts = logic.GreyScale(maxRow, maxColumn, mandelPoints, Iteration);
                     break;
             }
             var rectangle = new Int32Rect(0, 0, maxColumn, maxRow);
             BitmapDisplay.WritePixels(rectangle, colorInts, BitmapDisplay.BackBufferStride, 0, 0);
-        }
-
-        private int[,] GreyScale()
-        {
-            int[,] colorInts = new int[maxRow, maxColumn];
-            Parallel.For(0, maxRow, (X, state) =>
-            {
-                Parallel.For(0, maxColumn, (Y, state) =>
-                {
-                    byte colorValue = (byte)(mandelPoints[X, Y] / Iteration * 255d);
-                    colorInts[X, Y] = BitConverter.ToInt32(new byte[] { colorValue, colorValue, colorValue, 255 });
-                });
-            });
-            return colorInts;
-        }
-
-        private int[,] BlueScale()
-        {
-            int[,] colorInts = new int[maxRow, maxColumn];
-            Parallel.For(0, maxRow, (X, state) =>
-            {
-                Parallel.For(0, maxColumn, (Y, state) =>
-                {
-                    byte colorValue = (byte)(mandelPoints[X, Y] / Iteration * 255d);
-                    colorInts[X, Y] = BitConverter.ToInt32(new byte[] { colorValue, 0, 0, 255 });
-                });
-            });
-            return colorInts;
         }
 
         private async Task DrawMandel()
@@ -226,13 +199,13 @@ namespace Presentation
             SetPixels();
         }
 
-        private readonly double zoomFactor = 0.75;
+        private readonly double zoomFactor = 0.5;
 
         private async void ZoomInMandel()
         {
             Zoom *= zoomFactor;
-            offsetX += 70 / Zoom;
-            offsetY -= 55 / Zoom;
+            offsetX += 80 / Zoom;
+            offsetY -= 60 / Zoom;
             await DrawMandel();
         }
 
@@ -241,7 +214,8 @@ namespace Presentation
             if (Zoom < 1)
             {
                 Zoom /= zoomFactor;
-
+                offsetX -= 80 / Zoom;
+                offsetY += 60 / Zoom;
                 await DrawMandel();
             }
         }

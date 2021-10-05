@@ -8,5 +8,11 @@ namespace LogicLayer
     public interface ILogic
     {
         public int[,] MandelbrotFractal(int maxRow, int maxColumn, int iterations, double zoom, double offsetX, double offsetY);
+
+        public int[,] GreyScale(int maxRow, int maxColumn, int[,] mandelPoints, int Iteration);
+
+        public int[,] BlueScale(int maxRow, int maxColumn, int[,] mandelPoints, int Iteration);
     }
+
+
 }

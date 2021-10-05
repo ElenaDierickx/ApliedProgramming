@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Presentation"
         mc:Ignorable="d"
         Title="{Binding Title}"
-        Height="450" Width="800"
+        Height="600" Width="1000"
         MouseWheel="Scroll"
         Mouse.PreviewMouseMove="WindowPreviesMouseMove">
     <DockPanel LastChildFill="true">

@@ -14,8 +14,8 @@ namespace LogicLayer
             {
                 Parallel.For(0, maxColumn, (Y, state) =>
                 {
-                    double b = (X / 600d * 4d - 2d) * zoom + (offsetY / 600d) * zoom;
-                    double a = (Y / 800d * 4d - 2d) * zoom + (offsetX / 800d) * zoom;
+                    double b = (X / (double)maxColumn * 4d - 2d) * zoom + (offsetY / (double)maxColumn) * zoom;
+                    double a = (Y / (double)maxRow * 4d - 2d) * zoom + (offsetX / (double)maxRow) * zoom;
                     int iter = 1;
                     double x = 0;
                     double y = 0;
@@ -34,6 +34,34 @@ namespace LogicLayer
                 });
             });
             return mandel;
+        }
+
+        public int[,] GreyScale(int maxRow, int maxColumn, int[,] mandelPoints, int iteration)
+        {
+            int[,] colorInts = new int[maxRow, maxColumn];
+            Parallel.For(0, maxRow, (X, state) =>
+            {
+                Parallel.For(0, maxColumn, (Y, state) =>
+                {
+                    byte colorValue = (byte)(mandelPoints[X, Y] / iteration * 255d);
+                    colorInts[X, Y] = BitConverter.ToInt32(new byte[] { colorValue, colorValue, colorValue, 255 });
+                });
+            });
+            return colorInts;
+        }
+
+        public int[,] BlueScale(int maxRow, int maxColumn, int[,] mandelPoints, int iteration)
+        {
+            int[,] colorInts = new int[maxRow, maxColumn];
+            Parallel.For(0, maxRow, (X, state) =>
+            {
+                Parallel.For(0, maxColumn, (Y, state) =>
+                {
+                    byte colorValue = (byte)(mandelPoints[X, Y] / iteration * 255d);
+                    colorInts[X, Y] = BitConverter.ToInt32(new byte[] { colorValue, 0, 0, 255 });
+                });
+            });
+            return colorInts;
         }
     }
 
