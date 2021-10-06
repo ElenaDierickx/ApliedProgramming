@@ -12,6 +12,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows;
+using System.Threading;
 
 namespace Presentation
 {
@@ -168,7 +169,7 @@ namespace Presentation
             CreateBitmap(maxColumn, maxRow);
             Iterations = new List<int> { 5, 10, 25, 100, 150, 200, 250, 500, 750, 1000 };
             Iteration = 200;
-            ColorSchemes = new List<string> { "GreyScale", "Banding", "UglyBanding" };
+            ColorSchemes = new List<string> { "GreyScale", "Banding", "UglyBanding", "Colors" };
             ColorScheme = "GreyScale";
             CornerPosition = logic.Scaling(0, maxRow, maxRow, maxColumn, Zoom, offsetX, offsetY);
         }
@@ -182,28 +183,36 @@ namespace Presentation
             OnPropertyChanged(nameof(BitmapDisplay));
         }
 
-        private void SetPixels()
+        private async Task SetPixels()
         {
-            int[,] colorInts;
-            switch (ColorScheme){
-                case "GreyScale":
-                    colorInts = logic.GreyScale(maxRow, maxColumn, mandelPoints, Iteration);
-                    break;
-                case "Banding":
-                    colorInts = logic.Banding(maxRow, maxColumn, mandelPoints);
-                    break;
-                case "UglyBanding":
-                    colorInts = logic.UglyBanding(maxRow, maxColumn, mandelPoints);
-                    break;
-                default:
-                    colorInts = logic.GreyScale(maxRow, maxColumn, mandelPoints, Iteration);
-                    break;
-            }
+            int[,] colorInts = new int[maxRow,maxColumn];
             var rectangle = new Int32Rect(0, 0, maxColumn, maxRow);
+            await Task.Run(() =>
+            {
+                
+                switch (ColorScheme)
+                {
+                    case "GreyScale":
+                        colorInts = logic.GreyScale(maxRow, maxColumn, mandelPoints, Iteration);
+                        break;
+                    case "Banding":
+                        colorInts = logic.Banding(maxRow, maxColumn, mandelPoints);
+                        break;
+                    case "UglyBanding":
+                        colorInts = logic.UglyBanding(maxRow, maxColumn, mandelPoints);
+                        break;
+                    case "Colors":
+                        colorInts = logic.Colors(maxRow, maxColumn, mandelPoints, Iteration);
+                        break;
+                    default:
+                        colorInts = logic.GreyScale(maxRow, maxColumn, mandelPoints, Iteration);
+                        break;
+                }
+            });
             BitmapDisplay.WritePixels(rectangle, colorInts, BitmapDisplay.BackBufferStride, 0, 0);
         }
 
-        
+        private CancellationTokenSource cts;
 
         private async Task DrawMandel()
         {

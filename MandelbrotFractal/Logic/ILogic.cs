@@ -13,6 +13,7 @@ namespace LogicLayer
         public int[,] GreyScale(int maxRow, int maxColumn, int[,] mandelPoints, int iteration);
         public int[,] Banding(int maxRow, int maxColumn, int[,] mandelPoints);
         public int[,] UglyBanding(int maxRow, int maxColumn, int[,] mandelPoints);
+        public int[,] Colors(int maxRow, int maxColumn, int[,] mandelPoints, int iteration);
         public DoublePoint Scaling(int X, int Y, int maxRow, int maxColumn, double zoom, double offsetX, double offsetY);
     }
 }

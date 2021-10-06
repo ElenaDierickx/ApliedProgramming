@@ -7,9 +7,9 @@ using System.Windows;
 
 namespace LogicLayer
 {
+        
     public class Logic : ILogic
     {
-        private readonly List<Color> colors = new List<Color> { Color.Aquamarine, Color.Green, Color.Red, Color.Yellow, Color.Orange };
         public int[,] MandelbrotFractal(int maxRow, int maxColumn, int iterations, double zoom, double offsetX, double offsetY)
         {
             int[,] mandel = new int[maxRow, maxColumn];
@@ -53,7 +53,7 @@ namespace LogicLayer
             {
                 for (int Y = 0; Y < maxColumn; Y++)
                 {
-                    byte colorValue = (byte)(mandelPoints[X, Y] / iteration * 255d);
+                    byte colorValue = (byte)((double)mandelPoints[X, Y] / (double)iteration * 255d);
                     colorInts[X, Y] = BitConverter.ToInt32(new byte[] { colorValue, colorValue, colorValue, 255 });
                 }
             });
@@ -78,6 +78,7 @@ namespace LogicLayer
             return colorInts;
         }
 
+        private readonly List<Color> colors = new List<Color> { Color.White, Color.Purple, Color.MediumPurple, Color.Black };
         public int[,] UglyBanding(int maxRow, int maxColumn, int[,] mandelPoints)
         {
             int[,] colorInts = new int[maxRow, maxColumn];
@@ -86,25 +87,40 @@ namespace LogicLayer
                 for (int Y = 0; Y < maxColumn; Y++)
                 {
                     Color color = colors[0];
-                    if(mandelPoints[X, Y] % 4 == 0)
+                    if (mandelPoints[X, Y] % 4 == 0)
                     {
                         color = colors[2];
-                    } else if (mandelPoints[X, Y] % 3 == 0)
+                    }
+                    else if (mandelPoints[X, Y] % 3 == 0)
                     {
                         color = colors[1];
-                    } else if (mandelPoints[X, Y] % 2 == 0)
+                    }
+                    else if (mandelPoints[X, Y] % 2 == 0)
                     {
                         color = colors[0];
                     }
-                    else if (mandelPoints[X, Y] % 7 == 0)
-                    {
-                        color = colors[3];
-                    }
-                    colorInts[X, Y] = BitConverter.ToInt32(new byte[] { color.R, color.G, color.B, color.A });
+                    colorInts[X, Y] = BitConverter.ToInt32(new byte[] { color.B, color.G, color.R, color.A });
                 }
             });
             return colorInts;
         }
+
+        public int[,] Colors(int maxRow, int maxColumn, int[,] mandelPoints, int iteration)
+        {
+            int[,] colorInts = new int[maxRow, maxColumn];
+            Parallel.For(0, maxRow, (X) =>
+            {
+                for (int Y = 0; Y < maxColumn; Y++)
+                {
+                    double colorValue = ((double)mandelPoints[X, Y] / (double)iteration * 255d);
+                    if (mandelPoints[X, Y] == iteration)
+                        colorValue = 0;
+                    colorInts[X, Y] = BitConverter.ToInt32(new byte[] { (byte)(colorValue % 3 * 85), (byte)(colorValue % 4 * 63), (byte)(colorValue % 5 * 51), 255 });
+                }
+            });
+            return colorInts;
+        }
+
     }
 
     
