@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         Title="{Binding Title}"
         Height="450" Width="800"
+        MinHeight="450" MinWidth="800"
         MouseWheel="Scroll"
         Mouse.PreviewMouseMove="WindowPreviesMouseMove">
     <DockPanel LastChildFill="true">

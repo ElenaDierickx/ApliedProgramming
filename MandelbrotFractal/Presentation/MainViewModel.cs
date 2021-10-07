@@ -195,7 +195,6 @@ namespace Presentation
         private async Task SetPixels(CancellationTokenSource tokenSource)
         {
             int[,] colorInts = new int[maxRow,maxColumn];
-            var rectangle = new Int32Rect(0, 0, maxColumn, maxRow);
             await Task.Run(() =>
             {
                 
@@ -218,8 +217,9 @@ namespace Presentation
                         break;
                 }
             });
-            if(colorInts.GetUpperBound(0) + 1 == maxRow && colorInts.GetUpperBound(1) + 1 == maxColumn)
+            if(colorInts.GetUpperBound(0) + 1 == maxRow && colorInts.GetUpperBound(1) + 1 == maxColumn && !token.IsCancellationRequested)
             {
+                var rectangle = new Int32Rect(0, 0, maxColumn, maxRow);
                 BitmapDisplay.WritePixels(rectangle, colorInts, BitmapDisplay.BackBufferStride, 0, 0);
             }
             
