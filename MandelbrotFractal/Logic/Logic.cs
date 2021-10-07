@@ -25,7 +25,7 @@ namespace LogicLayer
                     double r = 0;
                     while ((iter < iterations) && (r < 4))
                     {
-                        double newX = Math.Pow(x, 2) - Math.Pow(y, 2) + a;
+                        double newX = x * x - y * y + a;
                         double newY = 2 * x * y + b;
                         x = newX;
                         y = newY;
