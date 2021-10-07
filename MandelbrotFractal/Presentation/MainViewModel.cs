@@ -154,7 +154,6 @@ namespace Presentation
                 OnPropertyChanged("Zoom");
             }
         }
-        private CancellationTokenSource tokenSource;
 
         private double offsetX = 0;
         private double offsetY = 0;
@@ -193,7 +192,7 @@ namespace Presentation
             await DrawMandel();
         }
 
-        private async Task SetPixels()
+        private async Task SetPixels(CancellationTokenSource tokenSource)
         {
             int[,] colorInts = new int[maxRow,maxColumn];
             var rectangle = new Int32Rect(0, 0, maxColumn, maxRow);
@@ -203,38 +202,51 @@ namespace Presentation
                 switch (ColorScheme)
                 {
                     case "GreyScale":
-                        colorInts = logic.GreyScale(maxRow, maxColumn, mandelPoints, Iteration);
+                        colorInts = logic.GreyScale(maxRow, maxColumn, mandelPoints, Iteration, tokenSource.Token);
                         break;
                     case "Banding":
-                        colorInts = logic.Banding(maxRow, maxColumn, mandelPoints);
+                        colorInts = logic.Banding(maxRow, maxColumn, mandelPoints, tokenSource.Token);
                         break;
                     case "UglyBanding":
-                        colorInts = logic.UglyBanding(maxRow, maxColumn, mandelPoints);
+                        colorInts = logic.UglyBanding(maxRow, maxColumn, mandelPoints, tokenSource.Token);
                         break;
                     case "Colors":
-                        colorInts = logic.Colors(maxRow, maxColumn, mandelPoints, Iteration);
+                        colorInts = logic.Colors(maxRow, maxColumn, mandelPoints, Iteration, tokenSource.Token);
                         break;
                     default:
-                        colorInts = logic.GreyScale(maxRow, maxColumn, mandelPoints, Iteration);
+                        colorInts = logic.GreyScale(maxRow, maxColumn, mandelPoints, Iteration, tokenSource.Token);
                         break;
                 }
             });
-            BitmapDisplay.WritePixels(rectangle, colorInts, BitmapDisplay.BackBufferStride, 0, 0);
+            if(colorInts.GetUpperBound(0) + 1 == maxRow && colorInts.GetUpperBound(1) + 1 == maxColumn)
+            {
+                BitmapDisplay.WritePixels(rectangle, colorInts, BitmapDisplay.BackBufferStride, 0, 0);
+            }
+            
         }
+
+        private CancellationTokenSource tokenSource;
+        private CancellationToken token;
 
         private async Task DrawMandel()
         {
+            if(tokenSource != null && !tokenSource.IsCancellationRequested)
+            {
+                tokenSource.Cancel();
+            }
+
+            tokenSource = new CancellationTokenSource();
+
             await Task.Run(() =>
             {
                 Stopwatch stopWatch = new Stopwatch();
                 stopWatch.Start();
-                mandelPoints = logic.MandelbrotFractal(maxRow, maxColumn, Iteration, Zoom, offsetX, offsetY);
+                mandelPoints = logic.MandelbrotFractal(maxRow, maxColumn, Iteration, Zoom, offsetX, offsetY, tokenSource.Token);
                 stopWatch.Stop();
                 TimeElapsed = stopWatch.ElapsedMilliseconds.ToString();
             });
-            await SetPixels();
+            await SetPixels(tokenSource);
         }
-
         private readonly double zoomFactor = 2;
 
         private async void ZoomInMandel()
