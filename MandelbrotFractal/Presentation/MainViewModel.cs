@@ -18,8 +18,8 @@ namespace Presentation
 {
     public class MainViewModel : ObservableObject
     {
-        private const int maxRow = 600;
-        private const int maxColumn = 800;
+        private int maxRow = 600;
+        private int maxColumn = 800;
         
         private readonly ILogic logic;
         public string Title => "Mandelbrot Fractal";
@@ -139,6 +139,7 @@ namespace Presentation
         public IRelayCommand MouseChangedCommand { get; private set; }
         public IRelayCommand PanningCommand { get; private set; }
         public IRelayCommand DrawMandelCommand { get; private set; }
+        public IRelayCommand ResizeCommand { get; private set; }
 
         private double zoom = 1;
         public double Zoom
@@ -153,10 +154,10 @@ namespace Presentation
                 OnPropertyChanged("Zoom");
             }
         }
+        private CancellationTokenSource tokenSource;
 
         private double offsetX = 0;
         private double offsetY = 0;
-       
 
         public MainViewModel(ILogic logic)
         {
@@ -166,21 +167,30 @@ namespace Presentation
             ZoomOutCommand = new RelayCommand(ZoomOutMandel);
             MouseChangedCommand = new RelayCommand<Point>(MouseChanged);
             PanningCommand = new RelayCommand<Point>(Panning);
-            CreateBitmap(maxColumn, maxRow);
-            Iterations = new List<int> { 5, 10, 25, 100, 150, 200, 250, 500, 750, 1000 };
-            Iteration = 200;
+            ResizeCommand = new RelayCommand<double[]>(Resize);
+            CreateBitmap();
+            Iterations = new List<int> { 25, 100, 150, 200, 250, 500, 750, 1000, 2000, 5000, 10000 };
+            Iteration = 1000;
             ColorSchemes = new List<string> { "GreyScale", "Banding", "UglyBanding", "Colors" };
-            ColorScheme = "GreyScale";
+            ColorScheme = "Colors";
             CornerPosition = logic.Scaling(0, maxRow, maxRow, maxColumn, Zoom, offsetX, offsetY);
         }
 
-        private void CreateBitmap(int width, int height)
+        private void CreateBitmap()
         {
             double dpiX = 96d;
             double dpiY = 96d;
             var pixelFormat = PixelFormats.Pbgra32;
-            BitmapDisplay = new WriteableBitmap(width, height, dpiX, dpiY, pixelFormat, null);
+            BitmapDisplay = new WriteableBitmap(maxColumn, maxRow, dpiX, dpiY, pixelFormat, null);
             OnPropertyChanged(nameof(BitmapDisplay));
+        }
+
+        private async void Resize(double[] size)
+        {
+            maxRow = (int)size[1];
+            maxColumn = (int)size[0];
+            CreateBitmap();
+            await DrawMandel();
         }
 
         private async Task SetPixels()
@@ -212,8 +222,6 @@ namespace Presentation
             BitmapDisplay.WritePixels(rectangle, colorInts, BitmapDisplay.BackBufferStride, 0, 0);
         }
 
-        private CancellationTokenSource cts;
-
         private async Task DrawMandel()
         {
             await Task.Run(() =>
@@ -224,7 +232,7 @@ namespace Presentation
                 stopWatch.Stop();
                 TimeElapsed = stopWatch.ElapsedMilliseconds.ToString();
             });
-            SetPixels();
+            await SetPixels();
         }
 
         private readonly double zoomFactor = 2;

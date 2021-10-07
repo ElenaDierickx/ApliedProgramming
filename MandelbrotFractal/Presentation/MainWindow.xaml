@@ -51,7 +51,7 @@
             </StackPanel>
         </StackPanel>
         <Border Margin="10" BorderThickness="1" BorderBrush="Black">
-            <Image Source="{Binding BitmapDisplay}" Stretch="Fill" Name="bitmapArea" />
+            <Image Source="{Binding BitmapDisplay}" Stretch="None" Name="bitmapArea" SizeChanged="ChangeSize" />
         </Border>
     </DockPanel>
 </Window>

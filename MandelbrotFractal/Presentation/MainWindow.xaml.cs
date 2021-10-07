@@ -5,15 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Presentation
 {
@@ -23,11 +15,13 @@ namespace Presentation
     public partial class MainWindow : Window
     {
         private MainViewModel viewModel;
+
         public MainWindow(MainViewModel vm)
         {
             DataContext = vm;
             viewModel = DataContext as MainViewModel;
             InitializeComponent();
+            this.SizeChanged += ChangeSize;
         }
 
         private void Scroll(object sender, MouseWheelEventArgs e)
@@ -76,6 +70,13 @@ namespace Presentation
                 viewModel.PanningCommand.Execute(moved);
             }
             viewModel.MouseChangedCommand.Execute(mousePos);
+        }
+
+
+        private void ChangeSize(object sender, SizeChangedEventArgs e)
+        {
+            double[] size = new double[2] { e.NewSize.Width, e.NewSize.Height };
+            viewModel.ResizeCommand.Execute(size);
         }
     }
 }
