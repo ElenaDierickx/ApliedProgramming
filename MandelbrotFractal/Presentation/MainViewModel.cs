@@ -1,14 +1,9 @@
 ﻿using LogicLayer;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows;
@@ -217,7 +212,7 @@ namespace Presentation
                         break;
                 }
             });
-            if(colorInts.GetUpperBound(0) + 1 == maxRow && colorInts.GetUpperBound(1) + 1 == maxColumn && !token.IsCancellationRequested)
+            if(colorInts.GetUpperBound(0) + 1 == maxRow && colorInts.GetUpperBound(1) + 1 == maxColumn && !tokenSource.Token.IsCancellationRequested)
             {
                 var rectangle = new Int32Rect(0, 0, maxColumn, maxRow);
                 BitmapDisplay.WritePixels(rectangle, colorInts, BitmapDisplay.BackBufferStride, 0, 0);
@@ -226,7 +221,6 @@ namespace Presentation
         }
 
         private CancellationTokenSource tokenSource;
-        private CancellationToken token;
 
         private async Task DrawMandel()
         {
