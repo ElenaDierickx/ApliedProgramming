@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace LogicLayer
 {
         
     public class Logic : ILogic
     {
-        public int[,] MandelbrotFractal(int maxRow, int maxColumn, int iterations, double zoom, double offsetX, double offsetY)
+        public int[,] MandelbrotFractal(int maxRow, int maxColumn, int iterations, double zoom, double offsetX, double offsetY, CancellationToken tokenSource)
         {
             int[,] mandel = new int[maxRow, maxColumn];
             Parallel.For(0, maxRow, (X) =>
@@ -25,7 +24,11 @@ namespace LogicLayer
                     double r = 0;
                     while ((iter < iterations) && (r < 4))
                     {
-                        double newX = Math.Pow(x, 2) - Math.Pow(y, 2) + a;
+                        if (tokenSource.IsCancellationRequested)
+                        {
+                            return;
+                        }
+                        double newX = x * x - y * y + a;
                         double newY = 2 * x * y + b;
                         x = newX;
                         y = newY;
@@ -46,13 +49,17 @@ namespace LogicLayer
             return new DoublePoint(a, b);
         }
 
-        public int[,] GreyScale(int maxRow, int maxColumn, int[,] mandelPoints, int iteration)
+        public int[,] GreyScale(int maxRow, int maxColumn, int[,] mandelPoints, int iteration, CancellationToken tokenSource)
         {
             int[,] colorInts = new int[maxRow, maxColumn];
             Parallel.For(0, maxRow, (X) =>
             {
                 for (int Y = 0; Y < maxColumn; Y++)
                 {
+                    if (tokenSource.IsCancellationRequested)
+                    {
+                        return;
+                    }
                     byte colorValue = (byte)((double)mandelPoints[X, Y] / (double)iteration * 255d);
                     colorInts[X, Y] = BitConverter.ToInt32(new byte[] { colorValue, colorValue, colorValue, 255 });
                 }
@@ -60,13 +67,17 @@ namespace LogicLayer
             return colorInts;
         }
 
-        public int[,] Banding(int maxRow, int maxColumn, int[,] mandelPoints)
+        public int[,] Banding(int maxRow, int maxColumn, int[,] mandelPoints, CancellationToken tokenSource)
         {
             int[,] colorInts = new int[maxRow, maxColumn];
             Parallel.For(0, maxRow, (X) =>
             {
                 for (int Y = 0; Y < maxColumn; Y++)
                 {
+                    if (tokenSource.IsCancellationRequested)
+                    {
+                        return;
+                    }
                     byte colorValue = 0;
                     if (mandelPoints[X, Y] % 2 != 0)
                     {
@@ -79,13 +90,17 @@ namespace LogicLayer
         }
 
         private readonly List<Color> colors = new List<Color> { Color.White, Color.Purple, Color.MediumPurple, Color.Black };
-        public int[,] UglyBanding(int maxRow, int maxColumn, int[,] mandelPoints)
+        public int[,] UglyBanding(int maxRow, int maxColumn, int[,] mandelPoints, CancellationToken tokenSource)
         {
             int[,] colorInts = new int[maxRow, maxColumn];
             Parallel.For(0, maxRow, (X) =>
             {
                 for (int Y = 0; Y < maxColumn; Y++)
                 {
+                    if (tokenSource.IsCancellationRequested)
+                    {
+                        return;
+                    }
                     Color color = colors[0];
                     if (mandelPoints[X, Y] % 4 == 0)
                     {
@@ -105,13 +120,17 @@ namespace LogicLayer
             return colorInts;
         }
 
-        public int[,] Colors(int maxRow, int maxColumn, int[,] mandelPoints, int iteration)
+        public int[,] Colors(int maxRow, int maxColumn, int[,] mandelPoints, int iteration, CancellationToken tokenSource)
         {
             int[,] colorInts = new int[maxRow, maxColumn];
             Parallel.For(0, maxRow, (X) =>
             {
                 for (int Y = 0; Y < maxColumn; Y++)
                 {
+                    if (tokenSource.IsCancellationRequested)
+                    {
+                        return;
+                    }
                     double colorValue = ((double)mandelPoints[X, Y] / (double)iteration * 255d);
                     if (mandelPoints[X, Y] == iteration)
                         colorValue = 0;

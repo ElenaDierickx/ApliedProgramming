@@ -1,19 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Presentation
 {
@@ -23,11 +10,13 @@ namespace Presentation
     public partial class MainWindow : Window
     {
         private MainViewModel viewModel;
+
         public MainWindow(MainViewModel vm)
         {
             DataContext = vm;
             viewModel = DataContext as MainViewModel;
             InitializeComponent();
+            this.SizeChanged += ChangeSize;
         }
 
         private void Scroll(object sender, MouseWheelEventArgs e)
@@ -47,35 +36,30 @@ namespace Presentation
         private double oldY = 0;
         private void WindowPreviesMouseMove(object sender, MouseEventArgs e)
         {
-            var x = Math.Floor(e.GetPosition(this.bitmapArea).X * this.bitmapArea.Source.Width / this.bitmapArea.ActualWidth);
-            var y = Math.Floor(e.GetPosition(this.bitmapArea).Y * this.bitmapArea.Source.Height / this.bitmapArea.ActualHeight);
-            if (x > 799)
-            {
-                x = 799;
-            } else if (x < 0)
-            {
-                x = 0;
-            }
-            if (y > 599)
-            {
-                y = 599;
-            } else if(y < 0 ) {
-                y = 0;
-            }
+            var x = e.GetPosition(this.bitmapArea).X;
+            var y = e.GetPosition(this.bitmapArea).Y;
             Point mousePos = new Point(x, y);
-            if(e.LeftButton == MouseButtonState.Pressed && pressed == false && x < 800 && x > 0 && y > 0 && y < 600)
+            if(e.LeftButton == MouseButtonState.Pressed && pressed == false)
             {
                 oldX = x;
                 oldY = y;
                 pressed = true;
             }
-            if(e.LeftButton == MouseButtonState.Released && pressed && x < 800 && x > 0 && y > 0 && y < 600)
+            if(e.LeftButton == MouseButtonState.Released && pressed)
             {
                 Point moved = new Point(x - oldX, y - oldY);
                 pressed = false;                
                 viewModel.PanningCommand.Execute(moved);
             }
             viewModel.MouseChangedCommand.Execute(mousePos);
+        }
+
+        private void ChangeSize(object sender, SizeChangedEventArgs e)
+        {
+            double bitmapWidth = e.NewSize.Width;
+            double bitmapHeight = e.NewSize.Height;
+            double[] size = new double[2] { bitmapWidth, bitmapHeight };
+            viewModel.ResizeCommand.Execute(size);
         }
     }
 }

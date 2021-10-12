@@ -7,8 +7,9 @@
         mc:Ignorable="d"
         Title="{Binding Title}"
         Height="450" Width="800"
+        MinHeight="450" MinWidth="800"
         MouseWheel="Scroll"
-        Mouse.PreviewMouseMove="WindowPreviesMouseMove">
+        >
     <DockPanel LastChildFill="true">
         <StackPanel DockPanel.Dock="Right" Orientation="Vertical" Margin="10">
             <Button Content="Reset" Command="{Binding ResetCommand}" Margin="5"/>
@@ -51,7 +52,7 @@
             </StackPanel>
         </StackPanel>
         <Border Margin="10" BorderThickness="1" BorderBrush="Black">
-            <Image Source="{Binding BitmapDisplay}" Stretch="Fill" Name="bitmapArea" />
+            <Image Source="{Binding BitmapDisplay}" Stretch="None" Name="bitmapArea" SizeChanged="ChangeSize" Mouse.PreviewMouseMove="WindowPreviesMouseMove" MinHeight="400" MinWidth="600"/>
         </Border>
     </DockPanel>
 </Window>
