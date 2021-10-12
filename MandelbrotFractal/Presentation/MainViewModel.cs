@@ -18,6 +18,7 @@ namespace Presentation
 {
     public class MainViewModel : ObservableObject
     {
+        private CancellationToken ct;
         private const int maxRow = 600;
         private const int maxColumn = 800;
         
