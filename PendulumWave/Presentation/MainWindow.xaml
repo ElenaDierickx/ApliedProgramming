@@ -5,8 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Presentation"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
-    </Grid>
+        Title="PendulumWave" Height="450" Width="800"
+        PreviewKeyDown="WindowKeyDown">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+    </Window.Resources>
+    <DockPanel LastChildFill="True" Background="LightSlateGray" >
+        <Border x:Name="viewPortControl" Margin="10" BorderThickness="1" BorderBrush="Black" Background="White"
+                    MouseDown="ViewPortMouseDown" PreviewMouseWheel="ViewPortPreviewMouseWheel"  >
+            <Viewport3D x:Name="mainViewPort" Camera="{Binding Camera}" >
+                <ModelVisual3D x:Name ="visual3D" Content="{Binding Visual3dContent}" />
+            </Viewport3D>
+        </Border>
+    </DockPanel>
 </Window>
