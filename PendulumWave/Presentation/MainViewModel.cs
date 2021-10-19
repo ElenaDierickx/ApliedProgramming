@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using Wpf3DUtils;
 
@@ -19,12 +20,50 @@ namespace Presentation
         private readonly Model3DGroup _model3dGroup = new();
         public ProjectionCamera Camera => _cameraController.Camera;
         public Model3D Visual3dContent => _model3dGroup;
+        private readonly Model3DGroup _sphereGroup = new();
 
         public MainViewModel(IWorld world, ICameraController cameraController)
         {
             _world = world;
             _cameraController = cameraController;
+            _model3dGroup.Children.Add(_sphereGroup);
+            Init3DPresentation();
+            AddSphere();
         }
+
+        private void AddSphere()
+        {
+            _world.AddSphere();
+            var brush = new SolidColorBrush(Colors.Crimson);
+            var matGroup = new MaterialGroup();
+            matGroup.Children.Add(new DiffuseMaterial(brush));
+            matGroup.Children.Add(new SpecularMaterial(brush, 100));
+            var sphere = Models3D.CreateSphere(matGroup);
+            var transform = new Transform3DGroup();
+            transform.Children.Add(new ScaleTransform3D(100, 100, 100));
+            transform.Children.Add(new TranslateTransform3D(_world.SpherePositions[^1] - _world.Origin));
+            sphere.Transform = transform;
+            _sphereGroup.Children.Add(sphere);
+        }
+
+        #region Presentation setup
+
+
+        private void Init3DPresentation()
+        {
+            SetupCamera();
+            SetUpLights();
+        }
+
+        private void SetUpLights()
+        {
+            _model3dGroup.Children.Add(new AmbientLight(Colors.Gray));
+            var direction = new Vector3D(1.5, -3, -5);
+            _model3dGroup.Children.Add(new DirectionalLight(Colors.Gray, direction));
+        }
+
+
+        #endregion Presentation setup
 
         #region Camera control
 

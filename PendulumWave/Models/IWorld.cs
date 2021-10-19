@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,5 +12,7 @@ namespace Models
     {
         Point3D Origin { get; }
         (Point3D p1, Point3D p2) Bounds { get; }
+        ImmutableList<Point3D> SpherePositions { get; }
+        public void AddSphere();
     }
 }
