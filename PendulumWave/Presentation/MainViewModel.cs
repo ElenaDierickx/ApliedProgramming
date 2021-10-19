@@ -21,6 +21,7 @@ namespace Presentation
         public ProjectionCamera Camera => _cameraController.Camera;
         public Model3D Visual3dContent => _model3dGroup;
         private readonly Model3DGroup _sphereGroup = new();
+        private GeometryModel3D _beam;
 
         public MainViewModel(IWorld world, ICameraController cameraController)
         {
@@ -28,7 +29,26 @@ namespace Presentation
             _cameraController = cameraController;
             _model3dGroup.Children.Add(_sphereGroup);
             Init3DPresentation();
+            InitBeam();
             AddSphere();
+        }
+
+        private void InitBeam()
+        {
+            if (_beam != null) _model3dGroup.Children.Remove(_beam);
+            var brush = new SolidColorBrush(Colors.Black);
+            var matGroup = new MaterialGroup();
+            matGroup.Children.Add(new DiffuseMaterial(brush));
+            matGroup.Children.Add(new SpecularMaterial(brush, 100));
+            _beam = Models3D.CreateLine(start: _world.Origin,
+                                           end: _world.Origin + (_world.Beam.Length * new Vector3D(1, 0, 0)),
+                                           thickness: 10,
+                                           brush: brush);
+            var transform = new Transform3DGroup();
+            transform.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 1, 0), _world.Beam.Angle)));
+            transform.Children.Add(new TranslateTransform3D(_world.Beam.AnchorPoint - _world.Origin));
+            _beam.Transform = transform;
+            _model3dGroup.Children.Add(_beam);
         }
 
         private void AddSphere()
@@ -40,7 +60,7 @@ namespace Presentation
             matGroup.Children.Add(new SpecularMaterial(brush, 100));
             var sphere = Models3D.CreateSphere(matGroup);
             var transform = new Transform3DGroup();
-            transform.Children.Add(new ScaleTransform3D(100, 100, 100));
+            transform.Children.Add(new ScaleTransform3D(75, 75, 75));
             transform.Children.Add(new TranslateTransform3D(_world.SpherePositions[^1] - _world.Origin));
             sphere.Transform = transform;
             _sphereGroup.Children.Add(sphere);
@@ -72,7 +92,7 @@ namespace Presentation
             double l1 = (_world.Bounds.p1 - _world.Origin).Length;
             double l2 = (_world.Bounds.p2 - _world.Origin).Length;
             double radius = 2.3 * Math.Max(l1, l2);
-            _cameraController.PositionCamera(radius, Math.PI / 10, 2.0 * Math.PI / 5);
+            _cameraController.PositionCamera(radius, 0, 2.0 * Math.PI / 4);
         }
 
         public void ProcessKey(Key key)

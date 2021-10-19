@@ -11,10 +11,11 @@ namespace Models
     public class World : IWorld
     {
         private const int _worldSize = 1000;
+
         public Point3D Origin => new();
         public (Point3D p1, Point3D p2) Bounds { get; private set; }
+        public Beam Beam { get; private set; }
         public ImmutableList<Point3D> SpherePositions { get; private set; }
-        private readonly Random _rnd = new();
 
 
         public World()
@@ -22,21 +23,23 @@ namespace Models
             Bounds = (new Point3D(-_worldSize / 2, -_worldSize / 2, -_worldSize / 2),
                       new Point3D(_worldSize / 2, _worldSize / 2, _worldSize / 2));
             SpherePositions = ImmutableList<Point3D>.Empty;
+            InitBeam();
         }
 
-        private Point3D GetRandomPosition()
+        private void InitBeam()
         {
-            return new Point3D
+            Beam = new Beam
             {
-                X = Bounds.p1.X + ((Bounds.p2.X - Bounds.p1.X) * _rnd.NextDouble()),
-                Y = Bounds.p1.Y + ((Bounds.p2.Y - Bounds.p1.Y) * _rnd.NextDouble()),
-                Z = Bounds.p1.Z + ((Bounds.p2.Z - Bounds.p1.Z) * _rnd.NextDouble())
+                AnchorPoint = new Point3D { X = -1000, Y = 400, Z = 0 },
+                Angle = 0,
+                Length = 2000,
+                RotationalDelta = 0
             };
         }
 
         public void AddSphere()
         {
-            var position = GetRandomPosition();
+            var position = new Point3D { X = 0, Y = -200, Z = 0 };
             SpherePositions = SpherePositions.Add(position);
         }
     }
