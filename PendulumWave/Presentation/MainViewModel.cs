@@ -23,49 +23,11 @@ namespace Presentation
         public ProjectionCamera Camera => _cameraController.Camera;
         public Model3D Visual3dContent => _model3dGroup;
         private readonly Model3DGroup _sphereGroup = new();
+
+        private readonly Model3DGroup _ropeGroup = new();
         private GeometryModel3D _beam;
 
-        private double speed;
-        public double Speed
-        {
-            get
-            {
-                return speed;
-            }
-            set
-            {
-                speed = value;
-                OnPropertyChanged("Speed");
-            }
-        }
-
-        private double position;
-        public double Position
-        {
-            get
-            {
-                return position;
-            }
-            set
-            {
-                position = value;
-                OnPropertyChanged("Position");
-            }
-        }
-
-        private double acceleration;
-        public double Acceleration
-        {
-            get
-            {
-                return acceleration;
-            }
-            set
-            {
-                acceleration = value;
-                OnPropertyChanged("Acceleration");
-            }
-        }
+        
 
         public IRelayCommand MoveCommand { get; private set; }
         public MainViewModel(IWorld world, ICameraController cameraController)
@@ -73,8 +35,9 @@ namespace Presentation
             _world = world;
             _cameraController = cameraController;
             _model3dGroup.Children.Add(_sphereGroup);
+            _model3dGroup.Children.Add(_ropeGroup);
             Init3DPresentation();
-            InitBeam();
+            //InitBeam();
             AddSphere();
 
             CompositionTarget.Rendering += MoveSpheres;
@@ -115,6 +78,22 @@ namespace Presentation
                 sphere.Transform = transform;
                 _sphereGroup.Children.Add(sphere);
             }
+            //foreach (Rope ropeObj in _world.Ropes)
+            //{
+            //    var brush = new SolidColorBrush(Colors.Black);
+            //    var matGroup = new MaterialGroup();
+            //    matGroup.Children.Add(new DiffuseMaterial(brush));
+            //    matGroup.Children.Add(new SpecularMaterial(brush, 100));
+            //    var rope = Models3D.CreateLine(start: _world.Origin,
+            //                                   end: _world.Origin + (ropeObj.Length * new Vector3D(1, 0, 0)),
+            //                                   thickness: 0.2f,
+            //                                   brush: brush);
+            //    var transform = new Transform3DGroup();
+            //    transform.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 0, 1), ropeObj.Angle)));
+            //    transform.Children.Add(new TranslateTransform3D(ropeObj.AnchorPoint - _world.Origin));
+            //    rope.Transform = transform;
+            //    _model3dGroup.Children.Add(rope);
+            //}
         }
 
         private Task StartSimulation()
@@ -139,9 +118,6 @@ namespace Presentation
                 transform.Children.Add(new ScaleTransform3D(1, 1, 1));
                 transform.Children.Add(new TranslateTransform3D(_world.Spheres[i].Position - _world.Origin));
                 _sphereGroup.Children[i].Transform = transform;
-                Speed = _world.Spheres[i].Speed.Y;
-                Position = _world.Spheres[i].Position.Y;
-                Acceleration = _world.Spheres[i].Acceleration.Y;
             }
         }
 

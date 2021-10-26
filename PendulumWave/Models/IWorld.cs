@@ -14,6 +14,7 @@ namespace Models
         (Point3D p1, Point3D p2) Bounds { get; }
         public Beam Beam { get; }
         ImmutableList<Sphere> Spheres { get; }
+        ImmutableList<Rope> Ropes { get; }
         public void AddSphere();
 
         public void UpdateSpheres(double DeltaT);
