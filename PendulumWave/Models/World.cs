@@ -10,19 +10,19 @@ namespace Models
 {
     public class World : IWorld
     {
-        private const int _worldSize = 1000;
+        private const int _worldSize = 10;
 
         public Point3D Origin => new();
         public (Point3D p1, Point3D p2) Bounds { get; private set; }
         public Beam Beam { get; private set; }
-        public ImmutableList<Point3D> SpherePositions { get; private set; }
+        public ImmutableList<Sphere> Spheres { get; private set; }
 
 
         public World()
         {
             Bounds = (new Point3D(-_worldSize / 2, -_worldSize / 2, -_worldSize / 2),
                       new Point3D(_worldSize / 2, _worldSize / 2, _worldSize / 2));
-            SpherePositions = ImmutableList<Point3D>.Empty;
+            Spheres = ImmutableList<Sphere>.Empty;
             InitBeam();
         }
 
@@ -39,8 +39,21 @@ namespace Models
 
         public void AddSphere()
         {
-            var position = new Point3D { X = 0, Y = -200, Z = 0 };
-            SpherePositions = SpherePositions.Add(position);
+            Sphere sphere = new()
+            {
+                Position = new Point3D() { X = 0, Y = 8, Z = 0 },
+                Speed = new Vector3D { X = 0, Y = 0, Z = 0 },
+                Acceleration = new Vector3D { X = 0, Y = -9.81, Z = 0 }
+            };
+            Spheres = Spheres.Add(sphere);
+        }
+
+        public void UpdateSpheres(double DeltaT)
+        {
+            foreach(Sphere sphere in Spheres)
+            {
+                sphere.UpdateSphere(DeltaT);
+            }
         }
     }
 }

@@ -10,12 +10,28 @@
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
     </Window.Resources>
+
     <DockPanel LastChildFill="True" Background="LightSlateGray" >
-        <Border x:Name="viewPortControl" Margin="10" BorderThickness="1" BorderBrush="Black" Background="White"
+        <DockPanel DockPanel.Dock="Top" >
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Speed: "/>
+                <TextBlock Text="{Binding Speed}"/>
+                <TextBlock Text="Position: "/>
+                <TextBlock Text="{Binding Position}"/>
+                <TextBlock Text="Acceleration"/>
+                <TextBlock Text="{Binding Acceleration}"/>
+            </StackPanel>
+        </DockPanel>
+            <Border x:Name="viewPortControl" Margin="10" BorderThickness="1" BorderBrush="Black" Background="White"
                     MouseDown="ViewPortMouseDown" PreviewMouseWheel="ViewPortPreviewMouseWheel"  >
-            <Viewport3D x:Name="mainViewPort" Camera="{Binding Camera}" >
-                <ModelVisual3D x:Name ="visual3D" Content="{Binding Visual3dContent}" />
-            </Viewport3D>
-        </Border>
-    </DockPanel>
+                <Viewport3D x:Name="mainViewPort" Camera="{Binding Camera}" >
+                    <ModelVisual3D x:Name ="visual3D" Content="{Binding Visual3dContent}" />
+                </Viewport3D>
+            </Border>
+
+        </DockPanel>
+
+
+
 </Window>

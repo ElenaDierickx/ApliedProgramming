@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace Presentation
 {
@@ -20,6 +21,7 @@ namespace Presentation
     /// </summary>
     public partial class MainWindow : Window
     {
+
         private readonly MainViewModel _viewModel;
         private Point _lastPoint;
         public MainWindow(MainViewModel vm)
@@ -28,6 +30,7 @@ namespace Presentation
             _viewModel = vm;
             InitializeComponent();
         }
+
 
         private void WindowKeyDown(object sender, KeyEventArgs e)
         {

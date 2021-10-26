@@ -3,7 +3,9 @@ using Microsoft.Toolkit.Mvvm.Input;
 using Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -23,6 +25,49 @@ namespace Presentation
         private readonly Model3DGroup _sphereGroup = new();
         private GeometryModel3D _beam;
 
+        private double speed;
+        public double Speed
+        {
+            get
+            {
+                return speed;
+            }
+            set
+            {
+                speed = value;
+                OnPropertyChanged("Speed");
+            }
+        }
+
+        private double position;
+        public double Position
+        {
+            get
+            {
+                return position;
+            }
+            set
+            {
+                position = value;
+                OnPropertyChanged("Position");
+            }
+        }
+
+        private double acceleration;
+        public double Acceleration
+        {
+            get
+            {
+                return acceleration;
+            }
+            set
+            {
+                acceleration = value;
+                OnPropertyChanged("Acceleration");
+            }
+        }
+
+        public IRelayCommand MoveCommand { get; private set; }
         public MainViewModel(IWorld world, ICameraController cameraController)
         {
             _world = world;
@@ -31,6 +76,9 @@ namespace Presentation
             Init3DPresentation();
             InitBeam();
             AddSphere();
+
+            CompositionTarget.Rendering += MoveSpheres;
+            Task.Run(StartSimulation);
         }
 
         private void InitBeam()
@@ -54,16 +102,47 @@ namespace Presentation
         private void AddSphere()
         {
             _world.AddSphere();
-            var brush = new SolidColorBrush(Colors.Crimson);
-            var matGroup = new MaterialGroup();
-            matGroup.Children.Add(new DiffuseMaterial(brush));
-            matGroup.Children.Add(new SpecularMaterial(brush, 100));
-            var sphere = Models3D.CreateSphere(matGroup);
-            var transform = new Transform3DGroup();
-            transform.Children.Add(new ScaleTransform3D(75, 75, 75));
-            transform.Children.Add(new TranslateTransform3D(_world.SpherePositions[^1] - _world.Origin));
-            sphere.Transform = transform;
-            _sphereGroup.Children.Add(sphere);
+            foreach (Sphere sphereObj in _world.Spheres)
+            {
+                var brush = new SolidColorBrush(Colors.Crimson);
+                var matGroup = new MaterialGroup();
+                matGroup.Children.Add(new DiffuseMaterial(brush));
+                matGroup.Children.Add(new SpecularMaterial(brush, 100));
+                var sphere = Models3D.CreateSphere(matGroup);
+                var transform = new Transform3DGroup();
+                transform.Children.Add(new ScaleTransform3D(1, 1, 1));
+                transform.Children.Add(new TranslateTransform3D(sphereObj.Position - _world.Origin));
+                sphere.Transform = transform;
+                _sphereGroup.Children.Add(sphere);
+            }
+        }
+
+        private Task StartSimulation()
+        {
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+            double previousTime = 0;
+
+            while (true)
+            {
+                double deltaT = stopWatch.Elapsed.TotalSeconds - previousTime;
+                previousTime = stopWatch.Elapsed.TotalSeconds;
+                _world.UpdateSpheres(deltaT);
+            }
+        }
+
+        private void MoveSpheres(object sender, EventArgs e)
+        {
+            for(int i = 0; i < _world.Spheres.Count; i++)
+            {
+                var transform = new Transform3DGroup();
+                transform.Children.Add(new ScaleTransform3D(1, 1, 1));
+                transform.Children.Add(new TranslateTransform3D(_world.Spheres[i].Position - _world.Origin));
+                _sphereGroup.Children[i].Transform = transform;
+                Speed = _world.Spheres[i].Speed.Y;
+                Position = _world.Spheres[i].Position.Y;
+                Acceleration = _world.Spheres[i].Acceleration.Y;
+            }
         }
 
         #region Presentation setup
