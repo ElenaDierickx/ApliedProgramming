@@ -16,7 +16,9 @@ namespace Models
         ImmutableList<Sphere> Spheres { get; }
         ImmutableList<Rope> Ropes { get; }
         public void AddSphere();
+        public void AddPendulumRope(int amount);
 
         public void UpdateSpheres(double DeltaT);
+        public void UpdatePendulumRopes(double DeltaT);
     }
 }

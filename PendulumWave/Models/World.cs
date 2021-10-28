@@ -50,30 +50,35 @@ namespace Models
             Spheres = Spheres.Add(sphere);
         }
 
-        //public void AddSphere()
-        //{
-        //    Sphere sphere = new()
-        //    {
-        //        Position = new Point3D() { X = 0, Y = 0, Z = 0 },
-        //        Speed = new Vector3D { X = 0, Y = 0, Z = 0 },
-        //        Acceleration = new Vector3D { X = 0, Y = -9.81, Z = 0 }
-        //    };
-        //    Rope rope = new()
-        //    {
-        //        AnchorPoint = new Point3D() { X = 0, Y = 0, Z = 0 },
-        //        Length = 5,
-        //        Angle = 90
+        public void AddPendulumRope(int amount)
+        {
+            for(int i = 0; i < amount; i++)
+            {
 
-        //    };
-        //    Spheres = Spheres.Add(sphere);
-        //    Ropes = Ropes.Add(rope);
-        //}
+                Rope rope = new()
+                {
+                    AnchorPoint = new Point3D() { X = 0, Y = 5, Z = i * 2 },
+                    Length = 5,
+                    Angle = 40
+                };
+                Ropes = Ropes.Add(rope);
+            }
+
+        }
 
         public void UpdateSpheres(double DeltaT)
         {
             foreach(Sphere sphere in Spheres)
             {
                 sphere.UpdateSphere(DeltaT);
+            }
+        }
+
+        public void UpdatePendulumRopes(double DeltaT)
+        {
+            foreach (Rope rope in Ropes)
+            {
+                rope.UpdateRope(DeltaT);
             }
         }
     }

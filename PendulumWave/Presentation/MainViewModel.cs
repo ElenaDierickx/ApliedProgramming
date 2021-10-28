@@ -38,9 +38,10 @@ namespace Presentation
             _model3dGroup.Children.Add(_ropeGroup);
             Init3DPresentation();
             //InitBeam();
-            AddSphere();
+            //AddSphere();
+            AddPendulumRope();
 
-            CompositionTarget.Rendering += MoveSpheres;
+            CompositionTarget.Rendering += MovePendulumRopes;
             Task.Run(StartSimulation);
         }
 
@@ -78,22 +79,39 @@ namespace Presentation
                 sphere.Transform = transform;
                 _sphereGroup.Children.Add(sphere);
             }
-            //foreach (Rope ropeObj in _world.Ropes)
-            //{
-            //    var brush = new SolidColorBrush(Colors.Black);
-            //    var matGroup = new MaterialGroup();
-            //    matGroup.Children.Add(new DiffuseMaterial(brush));
-            //    matGroup.Children.Add(new SpecularMaterial(brush, 100));
-            //    var rope = Models3D.CreateLine(start: _world.Origin,
-            //                                   end: _world.Origin + (ropeObj.Length * new Vector3D(1, 0, 0)),
-            //                                   thickness: 0.2f,
-            //                                   brush: brush);
-            //    var transform = new Transform3DGroup();
-            //    transform.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 0, 1), ropeObj.Angle)));
-            //    transform.Children.Add(new TranslateTransform3D(ropeObj.AnchorPoint - _world.Origin));
-            //    rope.Transform = transform;
-            //    _model3dGroup.Children.Add(rope);
-            //}
+        }
+
+        private void AddPendulumRope()
+        {
+            _world.AddPendulumRope(10);
+            foreach (Rope ropeObj in _world.Ropes)
+            {
+                var brush = new SolidColorBrush(Colors.Black);
+                var matGroup = new MaterialGroup();
+                matGroup.Children.Add(new DiffuseMaterial(brush));
+                matGroup.Children.Add(new SpecularMaterial(brush, 100));
+                var rope = Models3D.CreateLine(start: _world.Origin,
+                                               end: _world.Origin - (ropeObj.Length * new Vector3D(1, 0, 0)),
+                                               thickness: 0.2f,
+                                               brush: brush);
+                var transform = new Transform3DGroup();
+                transform.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 0, 1), 90 + ropeObj.Angle)));
+                transform.Children.Add(new TranslateTransform3D(ropeObj.AnchorPoint - _world.Origin));
+                rope.Transform = transform;
+                _ropeGroup.Children.Add(rope);
+
+                brush = new SolidColorBrush(Colors.Crimson);
+                matGroup = new MaterialGroup();
+                matGroup.Children.Add(new DiffuseMaterial(brush));
+                matGroup.Children.Add(new SpecularMaterial(brush, 100));
+                var sphere = Models3D.CreateSphere(matGroup);
+                transform = new Transform3DGroup();
+                Point3D spherePos = new() { X = ropeObj.AnchorPoint.X + ropeObj.Length * Math.Cos(ropeObj.Angle * (Math.PI / 180)), Y = ropeObj.AnchorPoint.Y - ropeObj.Length * Math.Sin(ropeObj.Angle * (Math.PI / 180)), Z = ropeObj.AnchorPoint.Z };
+                transform.Children.Add(new ScaleTransform3D(0.8f, 0.8f, 0.8f));
+                transform.Children.Add(new TranslateTransform3D(spherePos - _world.Origin));
+                sphere.Transform = transform;
+                _sphereGroup.Children.Add(sphere);
+            }
         }
 
         private Task StartSimulation()
@@ -106,17 +124,35 @@ namespace Presentation
             {
                 double deltaT = stopWatch.Elapsed.TotalSeconds - previousTime;
                 previousTime = stopWatch.Elapsed.TotalSeconds;
-                _world.UpdateSpheres(deltaT);
+                //_world.UpdateSpheres(deltaT);
+                _world.UpdatePendulumRopes(deltaT);
             }
         }
 
         private void MoveSpheres(object sender, EventArgs e)
         {
-            for(int i = 0; i < _world.Spheres.Count; i++)
+            for (int i = 0; i < _world.Spheres.Count; i++)
             {
                 var transform = new Transform3DGroup();
                 transform.Children.Add(new ScaleTransform3D(1, 1, 1));
                 transform.Children.Add(new TranslateTransform3D(_world.Spheres[i].Position - _world.Origin));
+                _sphereGroup.Children[i].Transform = transform;
+            }
+        }
+
+        private void MovePendulumRopes(object sender, EventArgs e)
+        {
+            for (int i = 0; i < _world.Ropes.Count; i++)
+            {
+                var transform = new Transform3DGroup();
+                transform.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 0, 1), 90 + _world.Ropes[i].Angle)));
+                transform.Children.Add(new TranslateTransform3D(_world.Ropes[i].AnchorPoint - _world.Origin));
+                _ropeGroup.Children[i].Transform = transform;
+
+                transform = new Transform3DGroup();
+                Point3D spherePos = new() { X = _world.Ropes[i].AnchorPoint.X + _world.Ropes[i].Length * Math.Cos((_world.Ropes[i].Angle - 90) * (Math.PI / 180)), Y = _world.Ropes[i].AnchorPoint.Y + _world.Ropes[i].Length * Math.Sin((_world.Ropes[i].Angle - 90) * (Math.PI / 180)), Z = _world.Ropes[i].AnchorPoint.Z };
+                transform.Children.Add(new ScaleTransform3D(0.8f, 0.8f, 0.8f));
+                transform.Children.Add(new TranslateTransform3D(spherePos - _world.Origin));
                 _sphereGroup.Children[i].Transform = transform;
             }
         }

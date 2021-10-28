@@ -14,5 +14,14 @@ namespace Models
         public double Angle { get; set; }
         public double AngleSpeed { get; set; }
         public double AngleAcceleration { get; set; }
+
+        public void UpdateRope(double deltaT)
+        {
+            Angle += AngleSpeed * deltaT + (deltaT * deltaT / 2f) * AngleAcceleration;
+            AngleSpeed += AngleAcceleration * deltaT;
+            AngleAcceleration = -(9.81 / Length) * Math.Sin(Angle * (Math.PI / 180));
+        }
     }
+
+    
 }
