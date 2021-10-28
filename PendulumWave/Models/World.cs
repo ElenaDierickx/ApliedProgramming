@@ -39,6 +39,7 @@ namespace Models
 
         public void AddPendulumRope(int amount)
         {
+            Ropes = Ropes.Clear();
             for(int i = 0; i < amount; i++)
             {
 

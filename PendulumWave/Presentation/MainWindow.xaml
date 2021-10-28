@@ -15,12 +15,8 @@
         <DockPanel DockPanel.Dock="Top" >
 
             <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Speed: "/>
-                <TextBlock Text="{Binding Speed}"/>
-                <TextBlock Text="Position: "/>
-                <TextBlock Text="{Binding Position}"/>
-                <TextBlock Text="Acceleration"/>
-                <TextBlock Text="{Binding Acceleration}"/>
+                <Button DockPanel.Dock="Right" Width="130" HorizontalAlignment="Right"  Margin="15,5,25,5" Command="{Binding PauseCommand}">Pause / Play</Button>
+                <Button DockPanel.Dock="Right" Width="130" HorizontalAlignment="Right"  Margin="15,5,25,5" Command="{Binding ResetCommand}">Reset</Button>
             </StackPanel>
         </DockPanel>
             <Border x:Name="viewPortControl" Margin="10" BorderThickness="1" BorderBrush="Black" Background="White"
