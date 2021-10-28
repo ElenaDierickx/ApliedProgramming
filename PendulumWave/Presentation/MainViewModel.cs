@@ -38,7 +38,6 @@ namespace Presentation
             _model3dGroup.Children.Add(_ropeGroup);
             Init3DPresentation();
             //InitBeam();
-            //AddSphere();
             AddPendulumRope();
 
             CompositionTarget.Rendering += MovePendulumRopes;
@@ -61,24 +60,6 @@ namespace Presentation
             transform.Children.Add(new TranslateTransform3D(_world.Beam.AnchorPoint - _world.Origin));
             _beam.Transform = transform;
             _model3dGroup.Children.Add(_beam);
-        }
-
-        private void AddSphere()
-        {
-            _world.AddSphere();
-            foreach (Sphere sphereObj in _world.Spheres)
-            {
-                var brush = new SolidColorBrush(Colors.Crimson);
-                var matGroup = new MaterialGroup();
-                matGroup.Children.Add(new DiffuseMaterial(brush));
-                matGroup.Children.Add(new SpecularMaterial(brush, 100));
-                var sphere = Models3D.CreateSphere(matGroup);
-                var transform = new Transform3DGroup();
-                transform.Children.Add(new ScaleTransform3D(1, 1, 1));
-                transform.Children.Add(new TranslateTransform3D(sphereObj.Position - _world.Origin));
-                sphere.Transform = transform;
-                _sphereGroup.Children.Add(sphere);
-            }
         }
 
         private void AddPendulumRope()
@@ -124,19 +105,7 @@ namespace Presentation
             {
                 double deltaT = stopWatch.Elapsed.TotalSeconds - previousTime;
                 previousTime = stopWatch.Elapsed.TotalSeconds;
-                //_world.UpdateSpheres(deltaT);
                 _world.UpdatePendulumRopes(deltaT);
-            }
-        }
-
-        private void MoveSpheres(object sender, EventArgs e)
-        {
-            for (int i = 0; i < _world.Spheres.Count; i++)
-            {
-                var transform = new Transform3DGroup();
-                transform.Children.Add(new ScaleTransform3D(1, 1, 1));
-                transform.Children.Add(new TranslateTransform3D(_world.Spheres[i].Position - _world.Origin));
-                _sphereGroup.Children[i].Transform = transform;
             }
         }
 
