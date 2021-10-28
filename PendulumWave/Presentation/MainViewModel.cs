@@ -29,6 +29,9 @@ namespace Presentation
 
         public IRelayCommand PauseCommand { get; private set; }
         public IRelayCommand ResetCommand { get; private set; }
+        public IRelayCommand ChangePendulumAmount { get; private set; }
+
+        private int pendulumAmount = 10;
 
         public MainViewModel(IWorld world, ICameraController cameraController)
         {
@@ -40,12 +43,19 @@ namespace Presentation
 
             PauseCommand = new RelayCommand(PausePendulum);
             ResetCommand = new RelayCommand(ResetPendulum);
+            ChangePendulumAmount = new RelayCommand<int>(PendulumAmountChanged);
 
             CompositionTarget.Rendering += MovePendulumRopes;
             
 
             AddPendulumRope();
             Task.Run(StartSimulation);
+        }
+
+        private void PendulumAmountChanged(int amount)
+        {
+            pendulumAmount = amount;
+            ResetPendulum();
         }
 
         private void InitBeam()
@@ -75,13 +85,14 @@ namespace Presentation
         {
             _sphereGroup.Children.Clear();
             _ropeGroup.Children.Clear();
+            reset = true;
             AddPendulumRope();
             Task.Run(StartSimulation);
         }
 
         private void AddPendulumRope()
         {
-            _world.AddPendulumRope(10);
+            _world.AddPendulumRope(pendulumAmount);
             foreach (Rope ropeObj in _world.Ropes)
             {
                 var brush = new SolidColorBrush(Colors.Black);
@@ -115,20 +126,15 @@ namespace Presentation
         private bool pausePressed = false;
         private bool reset = false;
 
-        private Task StartSimulation()
+        private void StartSimulation()
         {
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
             double previousTime = 0;
             bool paused = false;
 
-            while (true)
+            while (!reset)
             {
-                if (reset)
-                {
-                    reset = false;
-                    return Task.CompletedTask;
-                }
                 if (pausePressed && paused)
                 {
                     stopWatch.Start();
@@ -145,6 +151,8 @@ namespace Presentation
                 previousTime = stopWatch.Elapsed.TotalSeconds;
                 _world.UpdatePendulumRopes(deltaT);
             }
+
+            reset = false;
         }
 
         private void MovePendulumRopes(object sender, EventArgs e)

@@ -17,6 +17,10 @@
             <StackPanel Orientation="Horizontal">
                 <Button DockPanel.Dock="Right" Width="130" HorizontalAlignment="Right"  Margin="15,5,25,5" Command="{Binding PauseCommand}">Pause / Play</Button>
                 <Button DockPanel.Dock="Right" Width="130" HorizontalAlignment="Right"  Margin="15,5,25,5" Command="{Binding ResetCommand}">Reset</Button>
+                <DockPanel VerticalAlignment="Center" Margin="10">
+                    <TextBox Text="{Binding ElementName=slValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40" />
+                    <Slider Width="200" Minimum="1" Maximum="40" TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="True" Name="slValue" ValueChanged="Slider_ValueChanged" />
+                </DockPanel>
             </StackPanel>
         </DockPanel>
             <Border x:Name="viewPortControl" Margin="10" BorderThickness="1" BorderBrush="Black" Background="White"

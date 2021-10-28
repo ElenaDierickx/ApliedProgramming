@@ -30,6 +30,11 @@ namespace Presentation
             _viewModel = vm;
             InitializeComponent();
         }
+        
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            _viewModel.ChangePendulumAmount.Execute((int)slValue.Value);
+        }
 
 
         private void WindowKeyDown(object sender, KeyEventArgs e)
