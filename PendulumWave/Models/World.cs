@@ -10,7 +10,7 @@ namespace Models
 {
     public class World : IWorld
     {
-        private const int _worldSize = 15;
+        private const double _worldSize = 0.5;
 
         public Point3D Origin => new();
         public (Point3D p1, Point3D p2) Bounds { get; private set; }
@@ -40,13 +40,13 @@ namespace Models
         public void AddPendulumRope(int amount)
         {
             Ropes = Ropes.Clear();
-            for(int i = 0; i < amount; i++)
+            for(double i = 0; i < amount; i++)
             {
-
+                double t = 60 / (50 + i) / (2f * Math.PI);
                 Rope rope = new()
                 {
-                    AnchorPoint = new Point3D() { X = 0, Y = 5, Z = i * 2 },
-                    Length = 2 * Math.PI * Math.Sqrt(1.2 * (i + 1) / 9.81),
+                    AnchorPoint = new Point3D() { X = 0, Y = 0, Z = (i - amount / 2) / 50 },
+                    Length = t * t * 9.81,
                     Angle = 40
                 };
                 Ropes = Ropes.Add(rope);

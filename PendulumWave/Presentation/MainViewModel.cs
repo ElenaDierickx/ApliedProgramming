@@ -140,7 +140,7 @@ namespace Presentation
             matGroup.Children.Add(new SpecularMaterial(brush, 100));
             var rope = Models3D.CreateLine(start: _world.Origin,
                                            end: _world.Origin - (ropeObj.Length * new Vector3D(1, 0, 0)),
-                                           thickness: 0.2f,
+                                           thickness: 0.005f,
                                            brush: brush);
             var transform = new Transform3DGroup();
             transform.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 0, 1), 90 + ropeObj.Angle)));
@@ -166,7 +166,7 @@ namespace Presentation
             var sphere = Models3D.CreateSphere(matGroup);
             var transform = new Transform3DGroup();
             Point3D spherePos = new() { X = ropeObj.AnchorPoint.X + ropeObj.Length * Math.Cos((ropeObj.Angle - 90) * (Math.PI / 180)), Y = ropeObj.AnchorPoint.Y + ropeObj.Length * Math.Sin((ropeObj.Angle - 90) * (Math.PI / 180)), Z = ropeObj.AnchorPoint.Z };
-            transform.Children.Add(new ScaleTransform3D(0.8f, 0.8f, 0.8f));
+            transform.Children.Add(new ScaleTransform3D(0.01f, 0.01f, 0.01f));
             transform.Children.Add(new TranslateTransform3D(spherePos - _world.Origin));
             sphere.Transform = transform;
             _sphereGroup.Children.Add(sphere);
@@ -218,7 +218,7 @@ namespace Presentation
 
                     transform = new Transform3DGroup();
                     Point3D spherePos = new() { X = _world.Ropes[i].AnchorPoint.X + _world.Ropes[i].Length * Math.Cos((_world.Ropes[i].Angle - 90) * (Math.PI / 180)), Y = _world.Ropes[i].AnchorPoint.Y + _world.Ropes[i].Length * Math.Sin((_world.Ropes[i].Angle - 90) * (Math.PI / 180)), Z = _world.Ropes[i].AnchorPoint.Z };
-                    transform.Children.Add(new ScaleTransform3D(0.8f, 0.8f, 0.8f));
+                    transform.Children.Add(new ScaleTransform3D(0.01f, 0.01f, 0.01f));
                     transform.Children.Add(new TranslateTransform3D(spherePos - _world.Origin));
                     _sphereGroup.Children[i].Transform = transform;
                 }
