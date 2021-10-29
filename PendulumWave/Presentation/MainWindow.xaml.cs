@@ -29,11 +29,18 @@ namespace Presentation
             DataContext = vm;
             _viewModel = vm;
             InitializeComponent();
+
+            slValue.Value = 10;
         }
         
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             _viewModel.ChangePendulumAmount.Execute((int)slValue.Value);
+        }
+
+        private void CheckBoxChanged(object sender, RoutedEventArgs e)
+        {
+            _viewModel.ChangeColorCommand.Execute(colorCheck.IsChecked);
         }
 
 

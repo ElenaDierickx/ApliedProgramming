@@ -21,6 +21,7 @@
                     <TextBox Text="{Binding ElementName=slValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" DockPanel.Dock="Right" TextAlignment="Right" Width="40" />
                     <Slider Width="200" Minimum="1" Maximum="40" TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="True" Name="slValue" ValueChanged="Slider_ValueChanged" />
                 </DockPanel>
+                <CheckBox Height="16" Content="Colors" Checked="CheckBoxChanged" Unchecked="CheckBoxChanged" Name="colorCheck" />
             </StackPanel>
         </DockPanel>
             <Border x:Name="viewPortControl" Margin="10" BorderThickness="1" BorderBrush="Black" Background="White"

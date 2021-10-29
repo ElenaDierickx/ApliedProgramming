@@ -19,6 +19,24 @@ namespace Presentation
         private readonly IWorld _world;
         private readonly ICameraController _cameraController;
 
+        private readonly SolidColorBrush[] _colorBrushList = new SolidColorBrush[]
+     {
+            new SolidColorBrush(Colors.Crimson),
+            new SolidColorBrush(Colors.MediumBlue),
+            new SolidColorBrush(Colors.Green),
+            new SolidColorBrush(Colors.DarkOrange),
+            new SolidColorBrush(Colors.Olive),
+            new SolidColorBrush(Colors.DarkCyan),
+            new SolidColorBrush(Colors.Brown),
+            new SolidColorBrush(Colors.SteelBlue),
+            new SolidColorBrush(Colors.Gold),
+            new SolidColorBrush(Colors.MistyRose),
+            new SolidColorBrush(Colors.PaleTurquoise),
+            new SolidColorBrush(Colors.PeachPuff),
+            new SolidColorBrush(Colors.Salmon),
+            new SolidColorBrush(Colors.Silver),
+     };
+
         private readonly Model3DGroup _model3dGroup = new();
         public ProjectionCamera Camera => _cameraController.Camera;
         public Model3D Visual3dContent => _model3dGroup;
@@ -30,6 +48,7 @@ namespace Presentation
         public IRelayCommand PauseCommand { get; private set; }
         public IRelayCommand ResetCommand { get; private set; }
         public IRelayCommand ChangePendulumAmount { get; private set; }
+        public IRelayCommand ChangeColorCommand { get; private set; }
 
         private int pendulumAmount = 10;
 
@@ -44,6 +63,7 @@ namespace Presentation
             PauseCommand = new RelayCommand(PausePendulum);
             ResetCommand = new RelayCommand(ResetPendulum);
             ChangePendulumAmount = new RelayCommand<int>(PendulumAmountChanged);
+            ChangeColorCommand = new RelayCommand<bool>(ChangeColor);
 
             CompositionTarget.Rendering += MovePendulumRopes;
             
@@ -56,6 +76,18 @@ namespace Presentation
         {
             pendulumAmount = amount;
             ResetPendulum();
+        }
+
+        private bool color = false;
+
+        private void ChangeColor(bool isChecked)
+        {
+            color = isChecked;
+            _sphereGroup.Children.Clear();
+            foreach (Rope ropeObj in _world.Ropes)
+            {
+                AddSphere(ropeObj);
+            }
         }
 
         private void InitBeam()
@@ -95,43 +127,60 @@ namespace Presentation
             _world.AddPendulumRope(pendulumAmount);
             foreach (Rope ropeObj in _world.Ropes)
             {
-                var brush = new SolidColorBrush(Colors.Black);
-                var matGroup = new MaterialGroup();
-                matGroup.Children.Add(new DiffuseMaterial(brush));
-                matGroup.Children.Add(new SpecularMaterial(brush, 100));
-                var rope = Models3D.CreateLine(start: _world.Origin,
-                                               end: _world.Origin - (ropeObj.Length * new Vector3D(1, 0, 0)),
-                                               thickness: 0.2f,
-                                               brush: brush);
-                var transform = new Transform3DGroup();
-                transform.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 0, 1), 90 + ropeObj.Angle)));
-                transform.Children.Add(new TranslateTransform3D(ropeObj.AnchorPoint - _world.Origin));
-                rope.Transform = transform;
-                _ropeGroup.Children.Add(rope);
-
-                brush = new SolidColorBrush(Colors.Crimson);
-                matGroup = new MaterialGroup();
-                matGroup.Children.Add(new DiffuseMaterial(brush));
-                matGroup.Children.Add(new SpecularMaterial(brush, 100));
-                var sphere = Models3D.CreateSphere(matGroup);
-                transform = new Transform3DGroup();
-                Point3D spherePos = new() { X = ropeObj.AnchorPoint.X + ropeObj.Length * Math.Cos(ropeObj.Angle * (Math.PI / 180)), Y = ropeObj.AnchorPoint.Y - ropeObj.Length * Math.Sin(ropeObj.Angle * (Math.PI / 180)), Z = ropeObj.AnchorPoint.Z };
-                transform.Children.Add(new ScaleTransform3D(0.8f, 0.8f, 0.8f));
-                transform.Children.Add(new TranslateTransform3D(spherePos - _world.Origin));
-                sphere.Transform = transform;
-                _sphereGroup.Children.Add(sphere);
+                AddRope(ropeObj);
+                AddSphere(ropeObj);
             }
+        }
+
+        private void AddRope(Rope ropeObj)
+        {
+            var brush = new SolidColorBrush(Colors.Black);
+            var matGroup = new MaterialGroup();
+            matGroup.Children.Add(new DiffuseMaterial(brush));
+            matGroup.Children.Add(new SpecularMaterial(brush, 100));
+            var rope = Models3D.CreateLine(start: _world.Origin,
+                                           end: _world.Origin - (ropeObj.Length * new Vector3D(1, 0, 0)),
+                                           thickness: 0.2f,
+                                           brush: brush);
+            var transform = new Transform3DGroup();
+            transform.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 0, 1), 90 + ropeObj.Angle)));
+            transform.Children.Add(new TranslateTransform3D(ropeObj.AnchorPoint - _world.Origin));
+            rope.Transform = transform;
+            _ropeGroup.Children.Add(rope);
+        }
+
+        private void AddSphere(Rope ropeObj)
+        {
+            SolidColorBrush brush;
+            if (color)
+            {
+                brush = _colorBrushList[_world.Ropes.IndexOf(ropeObj) % _colorBrushList.Length];
+            }
+            else
+            {
+                brush = new SolidColorBrush(Colors.Crimson);
+            }
+            var matGroup = new MaterialGroup();
+            matGroup.Children.Add(new DiffuseMaterial(brush));
+            matGroup.Children.Add(new SpecularMaterial(brush, 100));
+            var sphere = Models3D.CreateSphere(matGroup);
+            var transform = new Transform3DGroup();
+            Point3D spherePos = new() { X = ropeObj.AnchorPoint.X + ropeObj.Length * Math.Cos((ropeObj.Angle - 90) * (Math.PI / 180)), Y = ropeObj.AnchorPoint.Y + ropeObj.Length * Math.Sin((ropeObj.Angle - 90) * (Math.PI / 180)), Z = ropeObj.AnchorPoint.Z };
+            transform.Children.Add(new ScaleTransform3D(0.8f, 0.8f, 0.8f));
+            transform.Children.Add(new TranslateTransform3D(spherePos - _world.Origin));
+            sphere.Transform = transform;
+            _sphereGroup.Children.Add(sphere);
         }
 
         private bool pausePressed = false;
         private bool reset = false;
+        private bool paused = false;
 
         private void StartSimulation()
         {
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
             double previousTime = 0;
-            bool paused = false;
 
             while (!reset)
             {
@@ -149,6 +198,7 @@ namespace Presentation
                 }
                 double deltaT = stopWatch.Elapsed.TotalSeconds - previousTime;
                 previousTime = stopWatch.Elapsed.TotalSeconds;
+                
                 _world.UpdatePendulumRopes(deltaT);
             }
 
@@ -159,16 +209,19 @@ namespace Presentation
         {
             for (int i = 0; i < _world.Ropes.Count; i++)
             {
-                var transform = new Transform3DGroup();
-                transform.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 0, 1), 90 + _world.Ropes[i].Angle)));
-                transform.Children.Add(new TranslateTransform3D(_world.Ropes[i].AnchorPoint - _world.Origin));
-                _ropeGroup.Children[i].Transform = transform;
+                if (!paused)
+                {
+                    var transform = new Transform3DGroup();
+                    transform.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 0, 1), 90 + _world.Ropes[i].Angle)));
+                    transform.Children.Add(new TranslateTransform3D(_world.Ropes[i].AnchorPoint - _world.Origin));
+                    _ropeGroup.Children[i].Transform = transform;
 
-                transform = new Transform3DGroup();
-                Point3D spherePos = new() { X = _world.Ropes[i].AnchorPoint.X + _world.Ropes[i].Length * Math.Cos((_world.Ropes[i].Angle - 90) * (Math.PI / 180)), Y = _world.Ropes[i].AnchorPoint.Y + _world.Ropes[i].Length * Math.Sin((_world.Ropes[i].Angle - 90) * (Math.PI / 180)), Z = _world.Ropes[i].AnchorPoint.Z };
-                transform.Children.Add(new ScaleTransform3D(0.8f, 0.8f, 0.8f));
-                transform.Children.Add(new TranslateTransform3D(spherePos - _world.Origin));
-                _sphereGroup.Children[i].Transform = transform;
+                    transform = new Transform3DGroup();
+                    Point3D spherePos = new() { X = _world.Ropes[i].AnchorPoint.X + _world.Ropes[i].Length * Math.Cos((_world.Ropes[i].Angle - 90) * (Math.PI / 180)), Y = _world.Ropes[i].AnchorPoint.Y + _world.Ropes[i].Length * Math.Sin((_world.Ropes[i].Angle - 90) * (Math.PI / 180)), Z = _world.Ropes[i].AnchorPoint.Z };
+                    transform.Children.Add(new ScaleTransform3D(0.8f, 0.8f, 0.8f));
+                    transform.Children.Add(new TranslateTransform3D(spherePos - _world.Origin));
+                    _sphereGroup.Children[i].Transform = transform;
+                }
             }
         }
 
