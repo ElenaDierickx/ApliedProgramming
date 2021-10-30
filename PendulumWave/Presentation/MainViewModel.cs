@@ -18,6 +18,7 @@ namespace Presentation
     {
         private readonly IWorld _world;
         private readonly ICameraController _cameraController;
+        private readonly ICameraController _cameraController2;
 
         private readonly SolidColorBrush[] _colorBrushList = new SolidColorBrush[]
      {
@@ -37,8 +38,23 @@ namespace Presentation
             new SolidColorBrush(Colors.Silver),
      };
 
+        private int seconds;
+        public int Seconds
+        {
+            get
+            {
+                return seconds;
+            }
+            set
+            {
+                seconds = value;
+                OnPropertyChanged("Seconds");
+            }
+        }
+
         private readonly Model3DGroup _model3dGroup = new();
         public ProjectionCamera Camera => _cameraController.Camera;
+        public ProjectionCamera Camera2 => _cameraController2.Camera;
         public Model3D Visual3dContent => _model3dGroup;
         private readonly Model3DGroup _sphereGroup = new();
 
@@ -52,10 +68,11 @@ namespace Presentation
 
         private int pendulumAmount = 10;
 
-        public MainViewModel(IWorld world, ICameraController cameraController)
+        public MainViewModel(IWorld world, ICameraController cameraController, ICameraController cameraController2)
         {
             _world = world;
             _cameraController = cameraController;
+            _cameraController2 = cameraController2;
             _model3dGroup.Children.Add(_sphereGroup);
             _model3dGroup.Children.Add(_ropeGroup);
             Init3DPresentation();
@@ -198,6 +215,7 @@ namespace Presentation
                 }
                 double deltaT = stopWatch.Elapsed.TotalSeconds - previousTime;
                 previousTime = stopWatch.Elapsed.TotalSeconds;
+                Seconds = stopWatch.Elapsed.Seconds;
                 
                 _world.UpdatePendulumRopes(deltaT);
             }
@@ -231,6 +249,7 @@ namespace Presentation
         private void Init3DPresentation()
         {
             SetupCamera();
+            SetupCamera2();
             SetUpLights();
         }
 
@@ -252,6 +271,14 @@ namespace Presentation
             double l2 = (_world.Bounds.p2 - _world.Origin).Length;
             double radius = 2.3 * Math.Max(l1, l2);
             _cameraController.PositionCamera(radius, 0, 2.0 * Math.PI / 4);
+        }
+
+        private void SetupCamera2()
+        {
+            double l1 = (_world.Bounds.p1 - _world.Origin).Length;
+            double l2 = (_world.Bounds.p2 - _world.Origin).Length;
+            double radius = 2.3 * Math.Max(l1, l2);
+            _cameraController2.PositionCamera(radius, 0, Math.PI);
         }
 
         public void ProcessKey(Key key)

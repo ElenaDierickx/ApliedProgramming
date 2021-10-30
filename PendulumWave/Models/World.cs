@@ -10,7 +10,7 @@ namespace Models
 {
     public class World : IWorld
     {
-        private const double _worldSize = 0.5;
+        private const double _worldSize = 0.6;
 
         public Point3D Origin => new();
         public (Point3D p1, Point3D p2) Bounds { get; private set; }

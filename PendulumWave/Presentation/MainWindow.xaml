@@ -22,16 +22,30 @@
                     <Slider Width="200" Minimum="1" Maximum="40" TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="True" Name="slValue" ValueChanged="Slider_ValueChanged" />
                 </DockPanel>
                 <CheckBox Height="16" Content="Colors" Checked="CheckBoxChanged" Unchecked="CheckBoxChanged" Name="colorCheck" />
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10 0 0 0">
+                    <Label>Seconds passed: </Label>
+                    <TextBlock VerticalAlignment="Center" Text="{Binding Seconds}"/>
+                </StackPanel>
             </StackPanel>
         </DockPanel>
+        <Grid >
+            <UniformGrid Grid.Row="0" Columns="2" Margin="0 0 5 5">
             <Border x:Name="viewPortControl" Margin="10" BorderThickness="1" BorderBrush="Black" Background="White"
-                    MouseDown="ViewPortMouseDown" PreviewMouseWheel="ViewPortPreviewMouseWheel"  >
-                <Viewport3D x:Name="mainViewPort" Camera="{Binding Camera}" >
+                    MouseDown="ViewPortMouseDown" PreviewMouseWheel="ViewPortPreviewMouseWheel" >
+                <Viewport3D x:Name="mainViewPort" Camera="{Binding Camera}"  >
                     <ModelVisual3D x:Name ="visual3D" Content="{Binding Visual3dContent}" />
                 </Viewport3D>
             </Border>
+            <Border Margin="10" BorderThickness="1" BorderBrush="Black" Background="White">
+                <Viewport3D x:Name="secondViewPort" Camera="{Binding Camera2}" >
+                    <ModelVisual3D x:Name ="secondVisual3D" Content="{Binding Visual3dContent}" />
+                </Viewport3D>
+            </Border>
+                </UniformGrid>
+        </Grid>
+        
 
-        </DockPanel>
+    </DockPanel>
 
 
 
