@@ -12,8 +12,10 @@ namespace Models
     {
         Point3D Origin { get; }
         (Point3D p1, Point3D p2) Bounds { get; }
-        public Beam Beam { get; }
+        ImmutableList<Beam> Beams { get; }
         ImmutableList<Rope> Ropes { get; }
+
+        public void AddBeams(int amount);
         public void AddPendulumRope(int amount);
 
         public void UpdatePendulumRopes(double DeltaT);

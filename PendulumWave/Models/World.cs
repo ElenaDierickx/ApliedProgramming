@@ -14,7 +14,7 @@ namespace Models
 
         public Point3D Origin => new();
         public (Point3D p1, Point3D p2) Bounds { get; private set; }
-        public Beam Beam { get; private set; }
+        public ImmutableList<Beam> Beams { get; private set; }
         public ImmutableList<Rope> Ropes { get; private set; }
 
 
@@ -23,18 +23,52 @@ namespace Models
             Bounds = (new Point3D(-_worldSize / 2, -_worldSize / 2, -_worldSize / 2),
                       new Point3D(_worldSize / 2, _worldSize / 2, _worldSize / 2));
             Ropes = ImmutableList<Rope>.Empty;
-            InitBeam();
+            Beams = ImmutableList<Beam>.Empty;
         }
 
-        private void InitBeam()
+        public void AddBeams(int amount)
         {
-            Beam = new Beam
+            Beams = Beams.Clear();
+            Beam beam1 = new Beam
             {
-                AnchorPoint = new Point3D { X = -1000, Y = 400, Z = 0 },
-                Angle = 0,
-                Length = 2000,
+                AnchorPoint = new Point3D() { X = 0, Y = 0, Z = -((double)amount + 5f) / 2f / 50f },
+                Angle = -90,
+                Length = ((double)amount + 5f) / 50f,
                 RotationalDelta = 0
             };
+            Beam beam2 = new Beam
+            {
+                AnchorPoint = new Point3D() { X = 0, Y = 0, Z = -(amount + 5) / 2f / 50f },
+                Angle = 0,
+                Length = 0.4f,
+                RotationalDelta = -70
+            };
+            Beam beam3 = new Beam
+            {
+                AnchorPoint = new Point3D() { X = 0, Y = 0, Z = -(amount + 5) / 2f / 50f },
+                Angle = 0,
+                Length = 0.4f,
+                RotationalDelta = -110
+            };
+            Beam beam4 = new Beam
+            {
+                AnchorPoint = new Point3D() { X = 0, Y = 0, Z = (amount + 5) / 2f / 50f },
+                Angle = 0,
+                Length = 0.4f,
+                RotationalDelta = -70
+            };
+            Beam beam5 = new Beam
+            {
+                AnchorPoint = new Point3D() { X = 0, Y = 0, Z = (amount + 5) / 2f / 50f },
+                Angle = 0,
+                Length = 0.4f,
+                RotationalDelta = -110
+            };
+            Beams = Beams.Add(beam1);
+            Beams = Beams.Add(beam2);
+            Beams = Beams.Add(beam3);
+            Beams = Beams.Add(beam4);
+            Beams = Beams.Add(beam5);
         }
 
         public void AddPendulumRope(int amount)

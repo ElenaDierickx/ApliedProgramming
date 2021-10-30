@@ -59,6 +59,7 @@ namespace Presentation
         private readonly Model3DGroup _sphereGroup = new();
 
         private readonly Model3DGroup _ropeGroup = new();
+        private readonly Model3DGroup _beamGroup = new();
         private GeometryModel3D _beam;
 
         public IRelayCommand PauseCommand { get; private set; }
@@ -75,6 +76,7 @@ namespace Presentation
             _cameraController2 = cameraController2;
             _model3dGroup.Children.Add(_sphereGroup);
             _model3dGroup.Children.Add(_ropeGroup);
+            _model3dGroup.Children.Add(_beamGroup);
             Init3DPresentation();
 
             PauseCommand = new RelayCommand(PausePendulum);
@@ -83,7 +85,6 @@ namespace Presentation
             ChangeColorCommand = new RelayCommand<bool>(ChangeColor);
 
             CompositionTarget.Rendering += MovePendulumRopes;
-            
 
             AddPendulumRope();
             Task.Run(StartSimulation);
@@ -107,22 +108,26 @@ namespace Presentation
             }
         }
 
-        private void InitBeam()
+        private void AddBeams()
         {
-            if (_beam != null) _model3dGroup.Children.Remove(_beam);
-            var brush = new SolidColorBrush(Colors.Black);
-            var matGroup = new MaterialGroup();
-            matGroup.Children.Add(new DiffuseMaterial(brush));
-            matGroup.Children.Add(new SpecularMaterial(brush, 100));
-            _beam = Models3D.CreateLine(start: _world.Origin,
-                                           end: _world.Origin + (_world.Beam.Length * new Vector3D(1, 0, 0)),
-                                           thickness: 10,
-                                           brush: brush);
-            var transform = new Transform3DGroup();
-            transform.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 1, 0), _world.Beam.Angle)));
-            transform.Children.Add(new TranslateTransform3D(_world.Beam.AnchorPoint - _world.Origin));
-            _beam.Transform = transform;
-            _model3dGroup.Children.Add(_beam);
+            _world.AddBeams(pendulumAmount);
+            foreach(Beam beamObj in _world.Beams)
+            {
+                var brush = new SolidColorBrush(Colors.Black);
+                var matGroup = new MaterialGroup();
+                matGroup.Children.Add(new DiffuseMaterial(brush));
+                matGroup.Children.Add(new SpecularMaterial(brush, 100));
+                var beam  = Models3D.CreateLine(start: _world.Origin,
+                                               end: _world.Origin + (beamObj.Length * new Vector3D(1, 0, 0)),
+                                               thickness: 0.01f,
+                                               brush: brush);
+                var transform = new Transform3DGroup();
+                transform.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 1, 0), beamObj.Angle)));
+                transform.Children.Add(new RotateTransform3D(new AxisAngleRotation3D(new Vector3D(0, 0, 1), beamObj.RotationalDelta)));
+                transform.Children.Add(new TranslateTransform3D(beamObj.AnchorPoint - _world.Origin));
+                beam.Transform = transform;
+                _beamGroup.Children.Add(beam);
+            }
         }
 
         private void PausePendulum()
@@ -134,6 +139,7 @@ namespace Presentation
         {
             _sphereGroup.Children.Clear();
             _ropeGroup.Children.Clear();
+            _beamGroup.Children.Clear();
             reset = true;
             AddPendulumRope();
             Task.Run(StartSimulation);
@@ -141,6 +147,7 @@ namespace Presentation
 
         private void AddPendulumRope()
         {
+            AddBeams();
             _world.AddPendulumRope(pendulumAmount);
             foreach (Rope ropeObj in _world.Ropes)
             {
