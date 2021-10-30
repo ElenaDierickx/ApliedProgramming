@@ -20,6 +20,10 @@ namespace Presentation
         private readonly ICameraController _cameraController;
         private readonly ICameraController _cameraController2;
 
+        private bool pausePressed = false;
+        private bool reset = false;
+        private bool paused = false;
+
         private readonly SolidColorBrush[] _colorBrushList = new SolidColorBrush[]
      {
             new SolidColorBrush(Colors.Crimson),
@@ -194,10 +198,6 @@ namespace Presentation
             sphere.Transform = transform;
             _sphereGroup.Children.Add(sphere);
         }
-
-        private bool pausePressed = false;
-        private bool reset = false;
-        private bool paused = false;
 
         private void StartSimulation()
         {
