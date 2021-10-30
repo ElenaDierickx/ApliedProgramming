@@ -60,7 +60,6 @@ namespace Presentation
 
         private readonly Model3DGroup _ropeGroup = new();
         private readonly Model3DGroup _beamGroup = new();
-        private GeometryModel3D _beam;
 
         public IRelayCommand PauseCommand { get; private set; }
         public IRelayCommand ResetCommand { get; private set; }
