@@ -1,3 +1,5 @@
+Aangepast: Package toegevoegd
+
 ## Feedback Applied Programming
 
 ### Opgave 1: Mandelbrot fractaal
