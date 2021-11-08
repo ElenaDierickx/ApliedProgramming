@@ -7,62 +7,69 @@
 
 #### Architectuur (15%)
 
---> Nog niet beoordeeld
-
 ***Modulair, meerlagenmodel***
 
-- [ ] *Meerlagenmodel via mappen of klassebibliotheken*
-- [ ] *Dependency injection*
-- [ ] *Gebruik  MVVM Design pattern*
+- [x] *Meerlagenmodel via mappen of klassebibliotheken*
+- [x] *Dependency injection*
+- [x] *Gebruik  MVVM Design pattern*
 
 ***'Separation of concern'***
 
-- [ ] *Domein-logica beperkt tot logische laag*
-- [ ] *Logische laag onafhankelijk van presentatielaag*
+- [x] *Domein-logica beperkt tot logische laag*
+- [x] *Logische laag onafhankelijk van presentatielaag*
 
+Gebruik waar mogelijk MVVM patroon met databinding en commands in MainWindow.
+Dit ter vervanging van de code behind waar je rechtstreeks methoden van je view model oproept
+
+bv. ValueChanged="Slider_ValueChanged"
+
+
+Je simulatielus wordt gestuurd vanuit je presenatielaag. Je laat de simulatie beter autonoom in het model draaien.
 
 #### Programmeerstijl, Kwaliteit van de code (10%)
 
---> Nog niet beoordeeld
 
 ***Naamgeving***
 
-- [ ] *Naamgeving volgens C# conventie*
-- [ ] *Zinvolle, duidelijke namen*
+- [x] *Naamgeving volgens C# conventie*
+- [x] *Zinvolle, duidelijke namen*
 
 ***Korte methodes***
 
-- [ ] *maximale lengte ~20 lijnen*
+- [x] *maximale lengte ~20 lijnen*
 
 ***Programmeerstijl***
 
-- [ ] *Layout code*
-- [ ] *Zinvolle, duidelijke namen*
-- [ ] *Correct gebruik commentaar*
-- [ ] *Algemene programmeerstijl*
+- [x] *Layout code*
+- [x] *Zinvolle, duidelijke namen*
+- [x] *Correct gebruik commentaar*
+- [x] *Algemene programmeerstijl*
+
 
 #### User interface, functionaliteit, UX (15%) 
 
---> Nog niet beoordeeld
-
 ***Ergonomie***
 
-- [ ] *Layout UI*
-- [ ] *estetische weergave* 
-- [ ] *Goede UX*
+- [x] *Layout UI*
+- [x] *estetische weergave* 
+- [x] *Goede UX*
 
 ***functionaliteit***
 
-- [ ] *Goede weergave view met controllerbare camera*
-- [ ] *Goede weergave 'Bottom' view*
-- [ ] *Weergave numerieke resultaten*
-- [ ] *Instelbaar aantal slingers*
-- [ ] *Instelbare kleurenweergave*
-- [ ] *Start, Pauze, Reset*
+- [x] *Goede weergave view met controllerbare camera*
+- [x] *Goede weergave 'Bottom' view*
+- [x] *Weergave numerieke resultaten*
+- [x] *Instelbaar aantal slingers*
+- [x] *Instelbare kleurenweergave*
+- [x] *Start, Pauze, Reset*
+
+Toepassing start onmiddellijk met zijn simulatie
+Kleuren kunnen verzet worden tijdens de simulatie, alsook tijdens pauze van een simulatie
+Geen instelbare draaihoek voorzien
+
 
 #### Goede werking, snelheid, bugs (25%)
 
---> Nog niet beoordeeld
 
 ***juiste technieken gebruikt***
 
@@ -84,24 +91,38 @@
 
 - [ ] *Geen bugs*
 
+Simulatie loopt zichtbaar traag. Verhoog het aantal oscillaties per seconde.
+Na sinusflow, chaos ... duurt te lang eer bollen weer in één lijn komen
+Berekening lengte rope ok
+renderloop gestuurd via CompositionTarget.Rendering
+foutje in formule berekening nieuwe hoek? Controleer bepaling hoekversnelling (omrekening naar radialen ook terug zetten)
+
+geen instelbaar aantal oscillaties per minuut
+
 #### Installeerbare package voor distributie (10%)
 
---> Nog niet beoordeeld
+- [x] *Installable package beschikbaar in repo*
 
-- [ ] *Installable package beschikbaar in repo*
+package met certificaat beschikbaar
+ook gepast icoontje opgenomen
 
 #### Correct gebruik GIT (10%)
 
---> Nog niet beoordeeld
+- [x] *Gebruik 'atomaire' commits*
+- [x] *zinvolle commit messages*
 
-- [ ] *Gebruik 'atomaire' commits*
-- [ ] *zinvolle commit messages*
+ok
 
 #### Rapportering (15%)
-
---> Nog niet beoordeeld
 
 - [ ] *Structuur*
 - [ ] *Volledigheid*
 - [ ] *Technische diepgang*
 - [ ] *Professionele stijl*
+
+Zeer summier
+korte oplijsting van de model-klassen en waarvoor ze staan
+korte toelichting van de 10 private MVM methoden
+
+Wel kort idee van berekening lengte pendulum vermeld, alsook vermelding CompositionTarget.Rendering
+Kortom: Leest niet als een rapport, maar kadert wel (zeer) kort de betekenis van de klassen & methoden

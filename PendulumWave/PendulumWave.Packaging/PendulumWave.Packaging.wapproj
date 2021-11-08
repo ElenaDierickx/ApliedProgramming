@@ -142,6 +142,8 @@
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.19041.8" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Presentation\Presentation.csproj" />
+    <ProjectReference Include="..\Presentation\Presentation.csproj">
+      <SkipGetTargetFrameworkProperties>True</SkipGetTargetFrameworkProperties>
+    </ProjectReference>
   </ItemGroup>
 </Project>
